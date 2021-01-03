@@ -7,7 +7,7 @@ import pymongo
 import click
 
 from app import config
-from app.io.models import App
+from app.io.models import ClientApp
 
 db_uri = "mongodb://{username}:{password}@{host}:{port}".format(
     username=quote_plus(config.DB_USERNAME),
@@ -28,12 +28,12 @@ def cli():
 @cli.command()
 @click.argument("app_name")
 def createapp(app_name: str):
-    key = jwk.JWK.generate(kty='EC', size=2048)
+    key = jwk.JWK.generate(kty="EC", size=2048)
     app_id = str(uuid.uuid4())
-    app = App(name=app_name, app_id=app_id, key=key.export())
-    db.app.insert_one(app.dict())
-    return app_id
+    app = ClientApp(name=app_name, app_id=app_id, key=key.export_private(as_dict=True))
+    db.client_app.insert_one(app.dict())
+    print(app_id)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

@@ -33,6 +33,7 @@ services:
       - DEBUG=1
     volumes:
       - ./src/app:/app/app
+      - ./src/manage.py:/app/manage.py
     depends_on:
       - mongo
       - redis_cache
