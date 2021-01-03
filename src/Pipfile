@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = {extras = ["full"], version = "*"}
+pydantic = {extras = ["email"], version = "*"}
+odmantic = "*"
+bcrypt = "*"
+redis = "*"
+python-multipart = "*"
+ujson = "*"
+passlib = "*"
+python-jwt = "*"
+jwcrypto = "*"
+aiohttp = "*"
+pymongo = "*"
+click = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

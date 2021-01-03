@@ -1,0 +1,54 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    expose:
+      - 27017
+    volumes:
+      - /data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${DB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}"
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "${DB_USERNAME}"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "${DB_PASSWORD}"
+    depends_on:
+      - mongo
+
+  app:
+    build:
+      context: src
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=mongo
+      - REDIS_HOST=redis_cache
+      - REDIS_PORT=6379
+      - DEBUG=1
+    volumes:
+      - ./src/app:/app/app
+    depends_on:
+      - mongo
+      - redis_cache
+
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - app
+
+  redis_cache:
+    image: redis:5.0.5-alpine
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
+
