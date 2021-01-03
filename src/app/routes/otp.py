@@ -4,7 +4,7 @@ from starlette.responses import RedirectResponse
 from app import config
 from app.dependencies import check_client_app
 from app.io import email as io_email
-from app.io.models import ClientApp
+from app.io.models import ClientApp, IssueToken
 from app.security import otp as security_otp, token as security_token
 
 otp_router = APIRouter()
@@ -30,7 +30,7 @@ async def request_otp(
     return "Check your email for a login code"
 
 
-@otp_router.post("/confirm/{app_id}")
+@otp_router.post("/confirm/{app_id}", response_model=IssueToken)
 async def confirm_otp(
     client_app: ClientApp = Depends(check_client_app),
     email: str = Query(..., title="Email"),
@@ -40,5 +40,4 @@ async def confirm_otp(
     if not security_otp.verify(email, code, client_app.app_id):
         raise HTTPException(status_code=401, detail="Invalid Code.")
     id_token = security_token.generate(email, client_app)
-    redirect_url = f"{client_app.redirect_url}?idToken={id_token}"
-    return RedirectResponse(redirect_url)
+    return IssueToken(idToken=id_token)

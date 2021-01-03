@@ -20,6 +20,13 @@ click = "*"
 uvicorn = "*"
 
 [dev-packages]
+pytest = "*"
+faker = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+requests = "*"
+aioresponses = "*"
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.9"

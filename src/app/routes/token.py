@@ -13,7 +13,7 @@ async def verify_token(
     client_app: ClientApp = Depends(check_client_app),
 ):
     try:
-        headers, claims = security_token.verify(client_app, id_token)
+        headers, claims = security_token.verify(id_token, client_app)
     except security_token.TokenVerificationError:
         raise HTTPException(status_code=401, detail=f"Invalid Token")
     return VerifiedTokenResponse(headers=headers, claims=claims)

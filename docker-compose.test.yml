@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mongo-test:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${DB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}"
+
+  test:
+    build:
+      context: src
+      dockerfile: Dockerfile.test
+    env_file:
+      - .env.test
+    environment:
+      - DB_HOST=mongo-test
+      - REDIS_HOST=redis-test
+      - REDIS_PORT=6379
+      - DEBUG=1
+    volumes:
+      - ./src/app:/app/app
+    depends_on:
+      - mongo-test
+      - redis-test
+
+  redis-test:
+    image: redis:5.0.5-alpine
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
+

@@ -2,8 +2,6 @@ version: '3'
 services:
   mongo:
     image: mongo
-    expose:
-      - 27017
     volumes:
       - /data/db
     environment:
@@ -45,7 +43,6 @@ services:
       - ./data/nginx:/etc/nginx/conf.d
     ports:
       - "8080:80"
-      - "8443:443"
     depends_on:
       - app
 

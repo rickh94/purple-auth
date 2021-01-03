@@ -8,6 +8,10 @@ from app import config
 from app.io.models import ClientApp
 
 
+class TokenVerificationError(BaseException):
+    pass
+
+
 def generate(email: str, client_app: ClientApp):
     key = jwk.JWK(**client_app.key)
     payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email}
@@ -19,11 +23,7 @@ def generate(email: str, client_app: ClientApp):
     )
 
 
-class TokenVerificationError(Exception):
-    pass
-
-
-def verify(client_app: ClientApp, token: str):
+def verify(token: str, client_app: ClientApp):
     key = jwk.JWK(**client_app.key)
     # noinspection PyProtectedMember
     try:
@@ -33,8 +33,9 @@ def verify(client_app: ClientApp, token: str):
         UnicodeDecodeError,
         InvalidJWSObject,
         InvalidJWSSignature,
-    ) as e:
-        raise TokenVerificationError(e)
+        ValueError,
+    ):
+        raise TokenVerificationError
     if claims["iss"] != f"{config.ISSUER}/{client_app.app_id}":
-        raise TokenVerificationError("Issue does not match")
+        raise TokenVerificationError
     return headers, claims

@@ -27,10 +27,16 @@ def cli():
 
 @cli.command()
 @click.argument("app_name")
-def createapp(app_name: str):
+@click.option("-u", "--url", prompt=True)
+def createapp(app_name: str, url: str):
     key = jwk.JWK.generate(kty="EC", size=2048)
     app_id = str(uuid.uuid4())
-    app = ClientApp(name=app_name, app_id=app_id, key=key.export_private(as_dict=True))
+    app = ClientApp(
+        name=app_name,
+        app_id=app_id,
+        key=key.export_private(as_dict=True),
+        redirect_url=url,
+    )
     db.client_app.insert_one(app.dict())
     print(app_id)
 

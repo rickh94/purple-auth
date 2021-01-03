@@ -1,16 +1,25 @@
-from typing import Dict
+from typing import Dict, Optional
 
-from odmantic import Model, Field
-from pydantic import BaseModel
+from odmantic import Model, Field as ODMField
+from pydantic import BaseModel, Field as PyField
 
 
+# noinspection PyAbstractClass
 class ClientApp(Model):
-    name: str = Field(..., title="Name of the app")
-    app_id: str = Field(..., title="app unique id")
+    name: str = ODMField(..., title="Name of the app")
+    app_id: str = ODMField(..., title="app unique id")
     key: Dict[str, str]
-    redirect_url: str = Field(..., title="Redirect URL")
+    redirect_url: str = ODMField(..., title="Redirect URL")
 
 
 class VerifiedTokenResponse(BaseModel):
     headers: dict
     claims: dict
+
+
+class IssueToken(BaseModel):
+    idToken: str = PyField(..., title="ID Token")
+    refreshToken: Optional[str] = PyField(
+        None,
+        title="Refresh Token",
+    )

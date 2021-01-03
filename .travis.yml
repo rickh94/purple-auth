@@ -1,0 +1,7 @@
+language: generic
+services:
+  - docker
+install:
+  - docker-compose -f docker-compose.test.yml --env-file .env.test up -d --build
+script: docker-compose -f docker-compose.test.yml --env-file .env.test run --rm test
+after_success: bash <(curl -s https://codecov.io/bash)
