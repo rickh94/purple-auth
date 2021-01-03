@@ -16,7 +16,7 @@ before_script:
   - docker-compose -f docker-compose.test.yml --env-file test_env.txt up -d --build
 
 script:
-  - docker-compose -f docker-compose.test.yml --enf-file test_env.txt run --rm test
+  - docker-compose -f docker-compose.test.yml --env-file test_env.txt run --rm test
 
 after_script:
   - docker-compose down
