@@ -1,8 +1,23 @@
-language: generic
+sudo: required
+
 services:
   - docker
-before_install: docker-compose -f docker-compose.test.yml --env-file .env.test build
-install:
-  - docker-compose -f docker-compose.test.yml --env-file .env.test up -d
-script: docker-compose -f docker-compose.test.yml --env-file .env.test run --rm test
-after_success: bash <(curl -s https://codecov.io/bash)
+
+env:
+  DOCKER_COMPOSE_VERSION: 1.27.4
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+before_script:
+  - docker-compose -f docker-compose.test.yml --env-file test_env.txt up -d --build
+
+script:
+  - docker-compose -f docker-compose.test.yml --enf-file test_env.txt run --rm test
+
+after_script:
+  - docker-compose down
+  - bash <(curl https://codecov.io/bash)
