@@ -19,4 +19,5 @@ script:
   - docker-compose -f docker-compose.test.yml --env-file test_env.txt run --rm test
 
 after_script:
-  - bash <(curl https://codecov.io/bash)
+  - sudo cp ./coverage/.coverage .
+  - sudo bash <(curl https://codecov.io/bash)
