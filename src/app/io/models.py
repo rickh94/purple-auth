@@ -12,7 +12,7 @@ class ClientApp(Model):
     redirect_url: str = ODMField(..., title="Redirect URL")
 
 
-class ClientAppPublic(Model):
+class ClientAppPublic(BaseModel):
     name: str
     app_id: str
     redirect_url: str
