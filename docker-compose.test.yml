@@ -19,6 +19,7 @@ services:
       - DEBUG=1
     volumes:
       - ./src/app:/app/app
+      - ./.coverage:/app/.coverage
     depends_on:
       - mongo-test
       - redis-test
