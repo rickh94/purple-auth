@@ -15,9 +15,8 @@ def test_client():
 
 @pytest.fixture
 def create_fake_client_app(faker):
-    key = jwk.JWK.generate(kty="EC", size=2048)
-
     def _create(app_id=None):
+        key = jwk.JWK.generate(kty="EC", size=2048)
         if not app_id:
             app_id = str(uuid.uuid4())
         return ClientApp(

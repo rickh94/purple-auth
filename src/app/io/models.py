@@ -12,6 +12,12 @@ class ClientApp(Model):
     redirect_url: str = ODMField(..., title="Redirect URL")
 
 
+class ClientAppPublic(Model):
+    name: str
+    app_id: str
+    redirect_url: str
+
+
 class VerifiedTokenResponse(BaseModel):
     headers: dict
     claims: dict
