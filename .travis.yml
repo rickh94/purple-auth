@@ -19,5 +19,6 @@ script:
   - docker-compose -f docker-compose.test.yml --env-file test_env.txt run --rm test
 
 after_script:
-  - sudo cp ./coverage/.coverage .
+  - sudo cp ./coverage/coverage.xml .
+  - sudo chown `whoami` coverage.xml
   - bash <(curl -s https://codecov.io/bash)

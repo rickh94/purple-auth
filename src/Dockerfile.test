@@ -8,4 +8,4 @@ RUN pipenv install --system --dev
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
-CMD pytest --rootdir=/app/app --cov=app && cp .coverage /coverage
+CMD pytest --rootdir=/app/app --cov=app --cov-report=xml && cp coverage.xml /coverage
