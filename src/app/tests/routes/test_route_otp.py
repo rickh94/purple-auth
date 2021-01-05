@@ -9,7 +9,7 @@ def test_request_otp(mocker, test_client, fake_client_app, faker):
     test_email = faker.email()
 
     response = test_client.post(
-        f"/otp/request/{fake_client_app.app_id}?email={test_email}"
+        f"/otp/request/{fake_client_app.app_id}", json={"email": test_email}
     )
 
     assert response.status_code == 200
@@ -26,7 +26,7 @@ def test_request_otp_no_app(app_not_found, mocker, test_client, faker):
     mock_send_email = mocker.patch("app.routes.otp.io_email.send")
     mock_otp_generate = mocker.patch("app.routes.otp.security_otp.generate")
 
-    response = test_client.post(f"/otp/request/12345?email={faker.email()}")
+    response = test_client.post(f"/otp/request/12345", json={"email": faker.email()})
 
     assert response.status_code == 404
     mock_send_email.assert_not_called()
@@ -44,7 +44,8 @@ def test_request_otp_email_failed(monkeypatch, test_client, faker, fake_client_a
     test_email = faker.email()
 
     response = test_client.post(
-        f"/otp/request/{fake_client_app.app_id}?email={test_email}"
+        f"/otp/request/{fake_client_app.app_id}",
+        json={"email": test_email},
     )
 
     assert response.status_code == 500
@@ -62,7 +63,8 @@ def test_confirm_otp(fake_client_app, mocker, faker, test_client):
     fake_code = "11111111"
 
     response = test_client.post(
-        f"/otp/confirm/{fake_client_app.app_id}?email={test_email}&code={fake_code}"
+        f"/otp/confirm/{fake_client_app.app_id}",
+        json={"email": test_email, "code": fake_code},
     )
 
     assert response.status_code == 200
@@ -84,7 +86,8 @@ def test_confirm_otp_fails(fake_client_app, monkeypatch, mocker, faker, test_cli
     fake_code = "11111111"
 
     response = test_client.post(
-        f"/otp/confirm/{fake_client_app.app_id}?email={test_email}&code={fake_code}"
+        f"/otp/confirm/{fake_client_app.app_id}",
+        json={"email": test_email, "code": fake_code},
     )
 
     assert response.status_code == 401
@@ -104,7 +107,8 @@ def test_confirm_otp_not_found(mocker, faker, test_client, app_not_found):
     fake_code = "11111111"
 
     response = test_client.post(
-        f"/otp/confirm/12345?email={test_email}&code={fake_code}"
+        f"/otp/confirm/12345",
+        json={"email": test_email, "code": fake_code},
     )
 
     assert response.status_code == 404

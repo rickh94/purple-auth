@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 from odmantic import Model, Field as ODMField
-from pydantic import BaseModel, Field as PyField
+from pydantic import BaseModel, Field as PyField, EmailStr
 
 
 # noinspection PyAbstractClass
@@ -29,3 +29,12 @@ class IssueToken(BaseModel):
         None,
         title="Refresh Token",
     )
+
+
+class AuthRequest(BaseModel):
+    email: EmailStr = PyField(..., title="User Email Address")
+
+
+class ConfirmCode(BaseModel):
+    email: EmailStr
+    code: str
