@@ -18,6 +18,7 @@ aiohttp = "*"
 pymongo = "*"
 click = "*"
 uvicorn = "*"
+cryptography = "*"
 
 [dev-packages]
 pytest = "*"
