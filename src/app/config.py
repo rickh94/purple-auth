@@ -1,5 +1,7 @@
 import os
 
+from cryptography.fernet import Fernet
+
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
@@ -16,3 +18,5 @@ DB_PORT = os.getenv("DB_PORT", "27017")
 DB_NAME = os.getenv("DB_NAME", "app")
 ISSUER = os.getenv("ISSUER", "http://localhost:8080")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+FERNET_KEY = os.getenv("FERNET_KEY")
+FERNET = Fernet(FERNET_KEY)

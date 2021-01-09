@@ -21,17 +21,19 @@ def create_fake_client_app(faker):
         key = jwk.JWK.generate(kty="EC", size=2048)
         refresh_key = None
         refresh_token_expire_hours = None
-        if refresh:
-            refresh_key = jwk.JWK.generate(kty="EC", size=4096)
-            refresh_token_expire_hours = refresh_expire or 24
-        return ClientApp(
+        _app = ClientApp(
             name=faker.company(),
             app_id=app_id,
-            refresh_key=refresh_key,
-            refresh_token_expire_hours=refresh_token_expire_hours,
-            key=key.export_private(as_dict=True),
+            refresh_key=None,
+            refresh_token_expire_hours=None,
+            key=None,
             redirect_url="http://localhost",
         )
+        _app.set_key(key)
+        if refresh:
+            _app.set_refresh_key(jwk.JWK.generate(kty="EC", size=4096))
+            _app.refresh_token_expire_hours = refresh_expire or 24
+        return _app
 
     return _create
 

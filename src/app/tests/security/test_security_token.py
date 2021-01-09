@@ -14,8 +14,10 @@ def test_generate(fake_email, fake_client_app):
     token = security_token.generate(fake_email, fake_client_app)
     assert token is not None
 
-    key = jwk.JWK(**fake_client_app.key)
-    headers, claims = jwt.verify_jwt(token, key, allowed_algs=["ES256"])
+    # key = jwk.JWK(**fake_client_app.key)
+    headers, claims = jwt.verify_jwt(
+        token, fake_client_app.get_key(), allowed_algs=["ES256"]
+    )
 
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
@@ -57,10 +59,9 @@ def test_verify_wrong_key_fails(fake_email, fake_client_app):
 
 def test_verify_expired_fails(fake_email, fake_client_app):
     payload = {"iss": f"{config.ISSUER}/{fake_client_app.app_id}", "sub": fake_email}
-    key = jwk.JWK(**fake_client_app.key)
     token = jwt.generate_jwt(
         payload,
-        key,
+        fake_client_app.get_key(),
         "ES256",
         datetime.timedelta(seconds=1),
     )
@@ -85,10 +86,10 @@ def test_verify_wrong_issuer_domain_fails(fake_email, fake_client_app):
         "iss": f"https://example.com/{fake_client_app.app_id}",
         "sub": fake_email,
     }
-    key = jwk.JWK(**fake_client_app.key)
+    # key = jwk.JWK(**fake_client_app.key)
     token = jwt.generate_jwt(
         payload,
-        key,
+        fake_client_app.get_key(),
         "ES256",
         datetime.timedelta(seconds=1),
     )
@@ -99,10 +100,10 @@ def test_verify_wrong_issuer_domain_fails(fake_email, fake_client_app):
 
 def test_verify_wrong_issuer_app_id_fails(fake_email, fake_client_app):
     payload = {"iss": f"{config.ISSUER}/{uuid.uuid4()}", "sub": fake_email}
-    key = jwk.JWK(**fake_client_app.key)
+    # key = jwk.JWK(**fake_client_app.key)
     token = jwt.generate_jwt(
         payload,
-        key,
+        fake_client_app.get_key(),
         "ES256",
         datetime.timedelta(seconds=1),
     )

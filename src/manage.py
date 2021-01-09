@@ -36,18 +36,18 @@ def createapp(
 ):
     key = jwk.JWK.generate(kty="EC", size=2048)
     app_id = str(uuid.uuid4())
-    refresh_key = None
-    if refresh:
-        refresh_key = jwk.JWK.generate(kty="EC", size=4096).export_private(as_dict=True)
-        refresh_token_expire_hours = refresh_token_expire_hours or 24
     app = ClientApp(
         name=app_name,
         app_id=app_id,
-        key=key.export_private(as_dict=True),
-        refresh_key=refresh_key,
-        refresh_token_expire_hours=refresh_token_expire_hours,
+        key=None,
+        refresh_key=None,
+        refresh_token_expire_hours=None,
         redirect_url=url,
     )
+    if refresh:
+        app.set_refresh_key(jwk.JWK.generate(kty="EC", size=4096))
+        app.refresh_token_expire_hours = refresh_token_expire_hours or 24
+    app.set_key(key)
     db.client_app.insert_one(app.dict())
     print(app_id)
 

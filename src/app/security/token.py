@@ -32,31 +32,31 @@ def _check_token(token, key, app_id) -> (dict, dict):
 
 
 def generate(email: str, client_app: ClientApp) -> str:
-    key = jwk.JWK(**client_app.key)
+    # key = jwk.JWK(**client_app.key)
     payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email}
     return jwt.generate_jwt(
         payload,
-        key,
+        client_app.get_key(),
         "ES256",
         datetime.timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
 
 def verify(token: str, client_app: ClientApp) -> (dict, dict):
-    key = jwk.JWK(**client_app.key)
-    return _check_token(token, key, client_app.app_id)
+    # key = jwk.JWK(**client_app.key)
+    return _check_token(token, client_app.get_key(), client_app.app_id)
 
 
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
-    key = jwk.JWK(**client_app.refresh_key)
+    # key = jwk.JWK(**client_app.refresh_key)
     uid = str(uuid.uuid4())
     payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email, "uid": uid}
     token = jwt.generate_jwt(
         payload,
-        key,
+        client_app.get_refresh_key(),
         "ES256",
         datetime.timedelta(hours=client_app.refresh_token_expire_hours),
     )
@@ -76,8 +76,10 @@ async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
 
 
 async def verify_refresh_token(token: str, client_app: ClientApp) -> str:
-    key = jwk.JWK(**client_app.refresh_key)
-    headers, claims = _check_token(token, key, client_app.app_id)
+    # key = jwk.JWK(**client_app.refresh_key)
+    headers, claims = _check_token(
+        token, client_app.get_refresh_key(), client_app.app_id
+    )
     found_rt = await engine.find_one(
         RefreshToken,
         (RefreshToken.email == claims["sub"])

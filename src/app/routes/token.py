@@ -24,7 +24,7 @@ async def refresh(
     refresh_token: str = Query(..., title="Refresh Token", alias="refreshToken"),
     client_app: ClientApp = Depends(check_client_app),
 ):
-    if not client_app.refresh_key:
+    if not client_app.get_refresh_key():
         raise HTTPException(
             status_code=403, detail="Refreshing isn't allowed for this app"
         )

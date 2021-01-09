@@ -42,7 +42,7 @@ async def confirm_otp(
         raise HTTPException(status_code=401, detail="Invalid Code.")
     id_token = security_token.generate(confirm_code.email, client_app)
     refresh_token = None
-    if client_app.refresh_key:
+    if client_app.get_refresh_key():
         refresh_token = await security_token.generate_refresh_token(
             confirm_code.email, client_app
         )

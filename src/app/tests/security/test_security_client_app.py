@@ -39,7 +39,7 @@ def test_exported_key_doesnt_verify_invalid_token(
     exported_key_dict = security_client_app.export_public_key(fake_client_app2)
     key = jwk.JWK(**exported_key_dict)
 
-    assert fake_client_app.key != fake_client_app2.key
+    assert fake_client_app.get_key() != fake_client_app2.get_key()
     with pytest.raises(InvalidJWSSignature):
         jwt.verify_jwt(token, key, allowed_algs=["ES256"])
 
