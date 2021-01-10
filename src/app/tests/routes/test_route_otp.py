@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock
+
 from app.io import email as io_email
 
 
@@ -69,6 +71,7 @@ def test_confirm_otp(fake_client_app, mocker, faker, test_client):
 
     assert response.status_code == 200
     assert response.json()["idToken"] == "fake_token"
+    assert response.json().get("refreshToken") is None
 
     mock_otp_verify.assert_called_once_with(
         test_email, fake_code, fake_client_app.app_id
@@ -115,3 +118,39 @@ def test_confirm_otp_not_found(mocker, faker, test_client, app_not_found):
 
     mock_otp_verify.assert_not_called()
     mock_token_generate.assert_not_called()
+
+
+def test_confirm_otp_with_refresh(
+    mocker, test_client, fake_refresh_client_app, monkeypatch, fake_email
+):
+    mock_otp_verify = mocker.patch(
+        "app.routes.otp.security_otp.verify",
+        return_value=True,
+    )
+    mock_token_generate = mocker.patch(
+        "app.routes.otp.security_token.generate", return_value="fake_token"
+    )
+
+    mock_refresh_token_generate = mocker.patch(
+        "app.routes.otp.security_token.generate_refresh_token",
+        new_callable=AsyncMock,
+        return_value="fake_refresh_token",
+    )
+    fake_code = "11111111"
+
+    response = test_client.post(
+        f"/otp/confirm/{fake_refresh_client_app.app_id}",
+        json={"email": fake_email, "code": fake_code},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["idToken"] == "fake_token"
+    assert response.json()["refreshToken"] == "fake_refresh_token"
+
+    mock_otp_verify.assert_called_once_with(
+        fake_email, fake_code, fake_refresh_client_app.app_id
+    )
+    mock_token_generate.assert_called_once_with(fake_email, fake_refresh_client_app)
+    mock_refresh_token_generate.assert_called_once_with(
+        fake_email, fake_refresh_client_app
+    )

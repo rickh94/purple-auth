@@ -166,7 +166,7 @@ async def test_generate_refresh_token(
 
 
 @pytest.mark.asyncio
-async def test_generate_refresh_token(
+async def test_generate_refresh_token_invalid_app(
     fake_email,
     fake_client_app: ClientApp,
     monkeypatch,
@@ -179,3 +179,180 @@ async def test_generate_refresh_token(
         await security_token.generate_refresh_token(fake_email, fake_client_app)
 
     mock_engine.save.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_verify_refresh_token(
+    fake_email, fake_refresh_client_app: ClientApp, monkeypatch, pwd_context
+):
+    uid = "fake_uuid"
+    payload = {
+        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "sub": fake_email,
+        "uid": uid,
+    }
+    expires = datetime.datetime.now() + datetime.timedelta(hours=24)
+    refresh_token = jwt.generate_jwt(
+        payload,
+        fake_refresh_client_app.get_refresh_key(),
+        "ES256",
+        datetime.timedelta(hours=fake_refresh_client_app.refresh_token_expire_hours),
+    )
+    saved_refresh_token = RefreshToken(
+        app_id=fake_refresh_client_app.app_id,
+        email=fake_email,
+        hash=pwd_context.hash(refresh_token),
+        expires=expires,
+        uid=uid,
+    )
+
+    async def _get_saved(*args):
+        return saved_refresh_token
+
+    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+
+    result = await security_token.verify_refresh_token(
+        refresh_token, fake_refresh_client_app
+    )
+
+    assert result is not None
+
+
+@pytest.mark.asyncio
+async def test_verify_refresh_token_not_found(
+    fake_email, fake_refresh_client_app: ClientApp, monkeypatch
+):
+    uid = "fake_uuid"
+    payload = {
+        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "sub": fake_email,
+        "uid": uid,
+    }
+    refresh_token = jwt.generate_jwt(
+        payload,
+        fake_refresh_client_app.get_refresh_key(),
+        "ES256",
+        datetime.timedelta(hours=fake_refresh_client_app.refresh_token_expire_hours),
+    )
+
+    async def _get_saved(*args):
+        return None
+
+    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+
+    with pytest.raises(security_token.TokenVerificationError):
+        await security_token.verify_refresh_token(
+            refresh_token, fake_refresh_client_app
+        )
+
+
+@pytest.mark.asyncio
+async def test_verify_refresh_token_expired_token(
+    fake_email, fake_refresh_client_app: ClientApp, monkeypatch, pwd_context
+):
+    uid = "fake_uuid"
+    expires = datetime.datetime.now() + datetime.timedelta(hours=24)
+    payload = {
+        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "sub": fake_email,
+        "uid": uid,
+    }
+    refresh_token = jwt.generate_jwt(
+        payload,
+        fake_refresh_client_app.get_refresh_key(),
+        "ES256",
+        datetime.timedelta(seconds=0),
+    )
+    saved_refresh_token = RefreshToken(
+        app_id=fake_refresh_client_app.app_id,
+        email=fake_email,
+        hash=pwd_context.hash(refresh_token),
+        expires=expires,
+        uid=uid,
+    )
+
+    async def _get_saved(*args):
+        return saved_refresh_token
+
+    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+
+    with pytest.raises(security_token.TokenVerificationError):
+        await security_token.verify_refresh_token(
+            refresh_token, fake_refresh_client_app
+        )
+
+
+@pytest.mark.asyncio
+async def test_verify_refresh_token_expired_in_database(
+    fake_email, fake_refresh_client_app: ClientApp, monkeypatch, pwd_context, mocker
+):
+    mock_delete = mocker.patch(
+        "app.security.token.engine.delete", new_callable=AsyncMock
+    )
+    uid = "fake_uuid"
+    expires = datetime.datetime.now() - datetime.timedelta(hours=24)
+    payload = {
+        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "sub": fake_email,
+        "uid": uid,
+    }
+    refresh_token = jwt.generate_jwt(
+        payload,
+        fake_refresh_client_app.get_refresh_key(),
+        "ES256",
+        datetime.timedelta(hours=24),
+    )
+    saved_refresh_token = RefreshToken(
+        app_id=fake_refresh_client_app.app_id,
+        email=fake_email,
+        hash=pwd_context.hash(refresh_token),
+        expires=expires,
+        uid=uid,
+    )
+
+    async def _get_saved(*args):
+        return saved_refresh_token
+
+    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+
+    with pytest.raises(security_token.TokenVerificationError):
+        await security_token.verify_refresh_token(
+            refresh_token, fake_refresh_client_app
+        )
+    mock_delete.assert_called()
+
+
+@pytest.mark.asyncio
+async def test_verify_refresh_token_pwd_verification_failed(
+    fake_email, fake_refresh_client_app: ClientApp, monkeypatch, pwd_context
+):
+    uid = "fake_uuid"
+    payload = {
+        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "sub": fake_email,
+        "uid": uid,
+    }
+    expires = datetime.datetime.now() + datetime.timedelta(hours=24)
+    refresh_token = jwt.generate_jwt(
+        payload,
+        fake_refresh_client_app.get_refresh_key(),
+        "ES256",
+        datetime.timedelta(hours=fake_refresh_client_app.refresh_token_expire_hours),
+    )
+    saved_refresh_token = RefreshToken(
+        app_id=fake_refresh_client_app.app_id,
+        email=fake_email,
+        hash=pwd_context.hash(f"{refresh_token}this should produce a different hash"),
+        expires=expires,
+        uid=uid,
+    )
+
+    async def _get_saved(*args):
+        return saved_refresh_token
+
+    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+
+    with pytest.raises(security_token.TokenVerificationError):
+        await security_token.verify_refresh_token(
+            refresh_token, fake_refresh_client_app
+        )

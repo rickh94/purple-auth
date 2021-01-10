@@ -63,6 +63,8 @@ def fake_refresh_client_app(create_fake_client_app, monkeypatch):
     async def _engine_fake_get(*args):
         return _fake
 
+    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
+
     return _fake
 
 
@@ -86,4 +88,4 @@ def fake_app_id():
 
 @pytest.fixture
 def pwd_context():
-    return CryptContext(schemes=["bcrypt"], deprecated="auto")
+    return CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")

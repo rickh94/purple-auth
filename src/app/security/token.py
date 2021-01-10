@@ -48,7 +48,7 @@ def verify(token: str, client_app: ClientApp) -> (dict, dict):
     return _check_token(token, client_app.get_key(), client_app.app_id)
 
 
-PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+PWD_CONTEXT = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 
 async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
@@ -87,6 +87,8 @@ async def verify_refresh_token(token: str, client_app: ClientApp) -> str:
         & (RefreshToken.app_id == client_app.app_id)
         & (RefreshToken.uid == claims["uid"]),
     )
+    if found_rt is None:
+        raise TokenVerificationError("Could not find matching token.")
     if found_rt.expires <= datetime.datetime.now():
         await engine.delete(found_rt)
         raise TokenVerificationError("Expired Token. Please log in again.")

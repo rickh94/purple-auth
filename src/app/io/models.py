@@ -76,3 +76,7 @@ class ConfirmCode(BaseModel):
 
 class VerifyToken(BaseModel):
     idToken: str = PyField(..., title="ID Token")
+
+
+class RequestRefresh(BaseModel):
+    refreshToken: str = PyField(..., title="Refresh Token")
