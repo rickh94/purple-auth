@@ -163,3 +163,19 @@ async def test_generate_refresh_token(
     assert generated_rt.expires <= should_expire_upper_bound
     assert generated_rt.uid == "fake_uuid"
     assert pwd_context.verify(refresh_token, generated_rt.hash)
+
+
+@pytest.mark.asyncio
+async def test_generate_refresh_token(
+    fake_email,
+    fake_client_app: ClientApp,
+    monkeypatch,
+    mocker,
+):
+    monkeypatch.setattr(uuid, "uuid4", lambda: "fake_uuid")
+    mock_engine = mocker.patch("app.security.token.engine", new_callable=AsyncMock)
+
+    with pytest.raises(security_token.TokenCreationError):
+        await security_token.generate_refresh_token(fake_email, fake_client_app)
+
+    mock_engine.save.assert_not_called()
