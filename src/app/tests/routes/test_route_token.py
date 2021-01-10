@@ -12,7 +12,7 @@ def test_verify_token(mocker, test_client, fake_client_app):
     )
 
     response = test_client.get(
-        f"/token/verify/{fake_client_app.app_id}?idToken=fake_token"
+        f"/token/verify/{fake_client_app.app_id}", json={"idToken": "fake_token"}
     )
 
     assert response.status_code == 200
@@ -29,7 +29,7 @@ def test_verify_token_fails(monkeypatch, test_client, fake_client_app):
     monkeypatch.setattr("app.routes.token.security_token.verify", _fail_token)
 
     response = test_client.get(
-        f"/token/verify/{fake_client_app.app_id}?idToken=fake_token"
+        f"/token/verify/{fake_client_app.app_id}", json={"idToken": "fake_token"}
     )
 
     assert response.status_code == 401
@@ -42,7 +42,7 @@ def test_verify_token_not_found(app_not_found, test_client, mocker):
         "app.routes.token.security_token.verify",
     )
 
-    response = test_client.get(f"/token/verify/12345?idToken=fake_token")
+    response = test_client.get(f"/token/verify/12345", json={"idToken": "fake_token"})
 
     assert response.status_code == 404
     assert response.json().get("headers") is None

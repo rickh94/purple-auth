@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d0ccf9897433219a7a52a161ef9836e2a64860377efb45e152025f31562b16a9"
+            "sha256": "3724671eec442f56569b80d6d9cec04be219cee2f87de78477ed7617f9d5f751"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -661,6 +661,14 @@
             "index": "pypi",
             "version": "==5.4.0"
         },
+        "freezegun": {
+            "hashes": [
+                "sha256:02b35de52f4699a78f6ac4518e4cd3390dddc43b0aeb978335a8f270a2d9668b",
+                "sha256:1cf08e441f913ff5e59b19cc065a8faa9dd1ddc442eaf0375294f344581a0643"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==1.0.0"
+        },
         "idna": {
             "hashes": [
                 "sha256:5205d03e7bcbb919cc9c19885f9920d622ca52448306f2377daede5cf3faac16",
@@ -774,6 +782,14 @@
             ],
             "index": "pypi",
             "version": "==2.10.1"
+        },
+        "pytest-freezegun": {
+            "hashes": [
+                "sha256:19c82d5633751bf3ec92caa481fb5cffaac1787bd485f0df6436fd6242176949",
+                "sha256:5318a6bfb8ba4b709c8471c94d0033113877b3ee02da5bfcd917c1889cde99a7"
+            ],
+            "index": "pypi",
+            "version": "==0.4.2"
         },
         "pytest-mock": {
             "hashes": [

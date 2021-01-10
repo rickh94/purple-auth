@@ -72,3 +72,7 @@ class AuthRequest(BaseModel):
 class ConfirmCode(BaseModel):
     email: EmailStr
     code: str
+
+
+class VerifyToken(BaseModel):
+    idToken: str = PyField(..., title="ID Token")

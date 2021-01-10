@@ -8,4 +8,5 @@ RUN pipenv install --system --dev
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
-CMD pytest --rootdir=/app/app --cov=app --cov-report=xml && cp coverage.xml /coverage
+ADD ./.coveragerc .
+CMD pytest --rootdir=/app/app --cov-config=./.coveragerc --cov=app --cov-report=xml --cov-report=term && cp coverage.xml /coverage

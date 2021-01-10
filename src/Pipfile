@@ -28,6 +28,7 @@ pytest-cov = "*"
 requests = "*"
 aioresponses = "*"
 pytest-asyncio = "*"
+pytest-freezegun = "*"
 
 [requires]
 python_version = "3.9"

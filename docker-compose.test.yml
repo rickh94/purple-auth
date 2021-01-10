@@ -3,8 +3,8 @@ services:
   mongo-test:
     image: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "${DB_USERNAME}"
-      MONGO_INITDB_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MONGO_INITDB_ROOT_USERNAME: testuser
+      MONGO_INITDB_ROOT_PASSWORD: testpass
 
   test:
     build:
@@ -17,6 +17,14 @@ services:
       - REDIS_HOST=redis-test
       - REDIS_PORT=6379
       - DEBUG=1
+      - DB_USERNAME=testuser
+      - DB_PASSWORD=testpass
+      - REDIS_PASSWORD=testredispass
+      - APP_VERSION=21.1.0a1
+      - MAILGUN_ENDPOINT=https://api.mailgun.net/v3/mg.example.com/messages
+      - FROM_ADDRESS=test@mg.example.com
+      - MAILGUN_KEY=fake-mailgun-key
+      - FERNET_KEY=QwU0xmHBPLl7lY2aSVgiWE0GiJDn/ReFx/KWDjClgrA=
     volumes:
       - ./src/app:/app/app
       - ./coverage:/coverage
@@ -26,5 +34,5 @@ services:
 
   redis-test:
     image: redis:5.0.5-alpine
-    command: redis-server --requirepass "${REDIS_PASSWORD}"
+    command: redis-server --requirepass testredispass
 

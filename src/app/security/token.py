@@ -1,7 +1,6 @@
 import datetime
 import uuid
 
-import jwcrypto.jwk as jwk
 import python_jwt as jwt
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from passlib.context import CryptContext
@@ -12,6 +11,10 @@ from app.io.models import ClientApp, RefreshToken
 
 
 class TokenVerificationError(BaseException):
+    pass
+
+
+class TokenCreationError(BaseException):
     pass
 
 
@@ -32,7 +35,6 @@ def _check_token(token, key, app_id) -> (dict, dict):
 
 
 def generate(email: str, client_app: ClientApp) -> str:
-    # key = jwk.JWK(**client_app.key)
     payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email}
     return jwt.generate_jwt(
         payload,
@@ -43,7 +45,6 @@ def generate(email: str, client_app: ClientApp) -> str:
 
 
 def verify(token: str, client_app: ClientApp) -> (dict, dict):
-    # key = jwk.JWK(**client_app.key)
     return _check_token(token, client_app.get_key(), client_app.app_id)
 
 
@@ -51,7 +52,8 @@ PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
-    # key = jwk.JWK(**client_app.refresh_key)
+    if not client_app.get_refresh_key() or not client_app.refresh_token_expire_hours:
+        raise TokenCreationError("Refresh is not enabled")
     uid = str(uuid.uuid4())
     payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email, "uid": uid}
     token = jwt.generate_jwt(
@@ -76,7 +78,6 @@ async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
 
 
 async def verify_refresh_token(token: str, client_app: ClientApp) -> str:
-    # key = jwk.JWK(**client_app.refresh_key)
     headers, claims = _check_token(
         token, client_app.get_refresh_key(), client_app.app_id
     )

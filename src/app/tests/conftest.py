@@ -1,9 +1,17 @@
 import uuid
+from urllib.parse import quote_plus
+
 import jwcrypto.jwk as jwk
+import pymongo
 
 import pytest
+from faker import Faker
 from fastapi.testclient import TestClient
+from motor import motor_asyncio
+from odmantic import AIOEngine
+from passlib.context import CryptContext
 
+from app import config
 from app.io.models import ClientApp
 from app.main import app
 
@@ -19,8 +27,6 @@ def create_fake_client_app(faker):
         if not app_id:
             app_id = str(uuid.uuid4())
         key = jwk.JWK.generate(kty="EC", size=2048)
-        refresh_key = None
-        refresh_token_expire_hours = None
         _app = ClientApp(
             name=faker.company(),
             app_id=app_id,
@@ -51,6 +57,16 @@ def fake_client_app(create_fake_client_app, monkeypatch):
 
 
 @pytest.fixture
+def fake_refresh_client_app(create_fake_client_app, monkeypatch):
+    _fake = create_fake_client_app(refresh=True)
+
+    async def _engine_fake_get(*args):
+        return _fake
+
+    return _fake
+
+
+@pytest.fixture
 def app_not_found(monkeypatch):
     async def _no_app(*args):
         return None
@@ -59,10 +75,15 @@ def app_not_found(monkeypatch):
 
 
 @pytest.fixture
-def fake_email(faker):
-    return faker.email()
+def fake_email():
+    return Faker().email()
 
 
 @pytest.fixture
 def fake_app_id():
     return uuid.uuid4()
+
+
+@pytest.fixture
+def pwd_context():
+    return CryptContext(schemes=["bcrypt"], deprecated="auto")

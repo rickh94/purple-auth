@@ -1,8 +1,0 @@
-REDIS_PASSWORD=testredispass
-DB_USERNAME=testuser
-DB_PASSWORD=testpass
-APP_VERSION=21.1.0a1
-MAILGUN_ENDPOINT=https://api.mailgun.net/v3/mg.example.com/messages
-FROM_ADDRESS=test@mg.example.com
-MAILGUN_KEY=fake-mailgun-key
-FERNET_KEY=QwU0xmHBPLl7lY2aSVgiWE0GiJDn/ReFx/KWDjClgrA=
