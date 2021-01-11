@@ -23,7 +23,9 @@ def test_client():
 
 @pytest.fixture
 def create_fake_client_app(faker):
-    def _create(app_id=None, refresh=False, refresh_expire=None):
+    def _create(
+        app_id=None, refresh=False, refresh_expire=None, failure_redirect_url=None
+    ):
         if not app_id:
             app_id = str(uuid.uuid4())
         key = jwk.JWK.generate(kty="EC", size=2048)
@@ -34,6 +36,7 @@ def create_fake_client_app(faker):
             refresh_token_expire_hours=None,
             key=None,
             redirect_url="http://localhost",
+            failure_redirect_url=failure_redirect_url,
         )
         _app.set_key(key)
         if refresh:

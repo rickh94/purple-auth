@@ -17,6 +17,11 @@ class ClientApp(Model):
     enc_refresh_key: Optional[bytes]
     refresh_token_expire_hours: Optional[int]
     redirect_url: str = ODMField(..., title="Redirect URL")
+    failure_redirect_url: Optional[str] = ODMField(
+        None,
+        title="Failure Redirect URL",
+        description="Redirect URL for authentication failures",
+    )
 
     def get_key(self) -> jwk.JWK:
         pem = FERNET.decrypt(self.enc_key)
