@@ -18,6 +18,7 @@ async def verify_token(
     vt: VerifyToken,
     client_app: ClientApp = Depends(check_client_app),
 ):
+    """Ask the server to verify a token for a specific app"""
     try:
         headers, claims = security_token.verify(vt.idToken, client_app)
     except security_token.TokenVerificationError:
@@ -30,6 +31,7 @@ async def refresh(
     req_res: RequestRefresh,
     client_app: ClientApp = Depends(check_client_app),
 ):
+    """Request a new idToken using a refresh token issued by this server."""
     if not client_app.get_refresh_key():
         raise HTTPException(
             status_code=403, detail="Refreshing isn't allowed for this app"

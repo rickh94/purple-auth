@@ -31,11 +31,16 @@ def cli():
 @click.option("-u", "--url", prompt=True)
 @click.option("-r", "--refresh", is_flag=True)
 @click.option("--refresh-token-expire-hours", type=int)
+@click.option("--app-id")
 def createapp(
-    app_name: str, url: str, refresh: bool, refresh_token_expire_hours: Optional[int]
+    app_name: str,
+    url: str,
+    refresh: bool,
+    refresh_token_expire_hours: Optional[int],
+    app_id: Optional[str],
 ):
     key = jwk.JWK.generate(kty="EC", size=2048)
-    app_id = str(uuid.uuid4())
+    app_id = app_id or str(uuid.uuid4())
     app = ClientApp(
         name=app_name,
         app_id=app_id,

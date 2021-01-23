@@ -37,6 +37,7 @@ async def confirm_magic(
     id_: str = Query(..., alias="id"),
     client_app: ClientApp = Depends(check_client_app),
 ):
+    """This endpoint confirms magic links. Do not use directly."""
     if email := security_magic.verify(id_, secret, client_app.app_id):
         id_token = security_token.generate(email, client_app)
         redirect_url = f"{client_app.redirect_url}?idToken={quote_plus(id_token)}"
