@@ -62,6 +62,37 @@ def saved_refresh_token(
     return _saved
 
 
+@pytest.fixture
+def generate_saved_refresh_token(fake_refresh_client_app, fake_email, pwd_context):
+    def _generate():
+        uid = str(uuid.uuid4())
+        payload = {
+            "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+            "sub": fake_email,
+            "uid": uid,
+        }
+        refresh_token = jwt.generate_jwt(
+            payload,
+            fake_refresh_client_app.get_refresh_key(),
+            "ES256",
+            datetime.timedelta(
+                hours=fake_refresh_client_app.refresh_token_expire_hours
+            ),
+        )
+        expires = datetime.datetime.now() + datetime.timedelta(hours=24)
+        _saved = RefreshToken(
+            app_id=fake_refresh_client_app.app_id,
+            email=fake_email,
+            hash=pwd_context.hash(refresh_token),
+            expires=expires,
+            uid=uid,
+        )
+
+        return _saved
+
+    return _generate
+
+
 def test_generate(fake_email, fake_client_app):
     token = security_token.generate(fake_email, fake_client_app)
     assert token is not None
@@ -386,3 +417,40 @@ async def test_delete_refresh_token_not_found(
         )
 
     fake_delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_delete_all_refresh_tokens(
+    fake_refresh_client_app,
+    monkeypatch,
+    mocker,
+    generate_saved_refresh_token,
+    fake_email,
+):
+    tokens = [generate_saved_refresh_token() for _ in range(10)]
+
+    class FakeResults:
+        def __init__(self, tokens):
+            self.tokens = tokens
+            self.i = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            i = self.i
+            if i >= len(self.tokens):
+                raise StopAsyncIteration
+            self.i += 1
+            return self.tokens[i]
+
+    def _find(*args):
+        return FakeResults(tokens)
+
+    monkeypatch.setattr("app.security.token.engine.find", _find)
+    fake_delete: mock.MagicMock = mocker.patch("app.security.token.engine.delete")
+
+    await security_token.delete_all_refresh_tokens(fake_email, fake_refresh_client_app)
+
+    for i, token in enumerate(tokens):
+        fake_delete.assert_any_call(token)

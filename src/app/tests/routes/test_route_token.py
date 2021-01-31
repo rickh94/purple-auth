@@ -137,10 +137,19 @@ def delete_mock(mocker):
 
 
 @pytest.fixture
-def fake_id_token(fake_refresh_client_app, monkeypatch):
+def delete_all_mock(mocker):
+    return mocker.patch(
+        "app.routes.token.security_token.delete_all_refresh_tokens",
+        new_callable=AsyncMock,
+    )
+
+
+@pytest.fixture
+def fake_id_token(fake_refresh_client_app, monkeypatch, fake_email):
     def _verify_id_token(token, client_app):
         if token != "fake-token" or client_app != fake_refresh_client_app:
             raise TokenVerificationError
+        return {"alg": "ES256"}, {"sub": fake_email}
 
     monkeypatch.setattr("app.routes.token.security_token.verify", _verify_id_token)
 
@@ -243,3 +252,84 @@ def test_delete_refresh_token_not_found(app_not_found, test_client, delete_mock)
     assert response.status_code == 404
 
     delete_mock.assert_not_called()
+
+
+def test_delete_all_refresh_tokens_success(
+    test_client,
+    fake_refresh_client_app,
+    fake_id_token,
+    delete_all_mock,
+    fake_email,
+):
+    response = test_client.delete(
+        f"/token/refresh/{fake_refresh_client_app.app_id}",
+        headers={"Authorization": f"Bearer {fake_id_token}"},
+    )
+
+    assert response.status_code == 204
+
+    delete_all_mock.assert_called_once_with(fake_email, fake_refresh_client_app)
+
+
+def test_delete_all_refresh_tokens_no_authorization_header(
+    delete_all_mock, test_client, fake_refresh_client_app, monkeypatch, fake_id_token
+):
+    response = test_client.delete(
+        f"/token/refresh/{fake_refresh_client_app.app_id}",
+    )
+
+    assert response.status_code == 422
+
+    delete_all_mock.assert_not_called()
+
+
+def test_delete_all_refresh_tokens_invalid_authorization_header(
+    test_client,
+    fake_refresh_client_app,
+    delete_all_mock,
+):
+    response = test_client.delete(
+        f"/token/refresh/{fake_refresh_client_app.app_id}",
+        headers={"Authorization": "fake-token"},
+    )
+
+    assert response.status_code == 401
+
+    delete_all_mock.assert_not_called()
+
+
+def test_delete_all_refresh_tokens_invalid_authorization_token(
+    delete_all_mock, test_client, fake_id_token, fake_refresh_client_app
+):
+    response = test_client.delete(
+        f"/token/refresh/{fake_refresh_client_app.app_id}",
+        headers={"Authorization": "Bearer invalid-token"},
+    )
+
+    assert response.status_code == 401
+
+    delete_all_mock.assert_not_called()
+
+
+def test_delete_all_refresh_tokens_not_supported_in_app(
+    delete_all_mock, test_client, fake_id_token, fake_client_app
+):
+    response = test_client.delete(
+        f"/token/refresh/{fake_client_app.app_id}",
+        headers={"Authorization": f"Bearer {fake_id_token}"},
+    )
+
+    assert response.status_code == 403
+
+    delete_all_mock.assert_not_called()
+
+
+def test_delete_refresh_token_not_found(app_not_found, test_client, delete_all_mock):
+    response = test_client.delete(
+        f"/token/refresh/12345",
+        headers={"Authorization": f"Bearer fake-token"},
+    )
+
+    assert response.status_code == 404
+
+    delete_all_mock.assert_not_called()

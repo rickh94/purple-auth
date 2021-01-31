@@ -2,11 +2,12 @@ import datetime
 import uuid
 
 import python_jwt as jwt
+from fastapi import Header, Depends, HTTPException
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from passlib.context import CryptContext
 
 from app import config
-from app.dependencies import engine
+from app.dependencies import engine, check_client_app
 from app.io.models import ClientApp, RefreshToken
 
 
@@ -106,3 +107,27 @@ async def delete_refresh_token(refresh_token: str, client_app: ClientApp):
     )
     found_rt = await _find_refresh_token(claims, client_app)
     await engine.delete(found_rt)
+
+
+async def delete_all_refresh_tokens(email: str, client_app: ClientApp):
+    async for rt in engine.find(
+        RefreshToken,
+        (RefreshToken.email == email) & (RefreshToken.app_id == client_app.app_id),
+    ):
+        await engine.delete(rt)
+
+
+async def authorization_header(
+    authorization: str = Header(...), client_app: ClientApp = Depends(check_client_app)
+) -> dict:
+    if "Bearer" not in authorization:
+        raise HTTPException(status_code=401, detail="Invalid authentication token")
+    token = authorization.replace("Bearer ", "")
+    try:
+        headers, claims = verify(token, client_app)
+    except TokenVerificationError:
+        raise HTTPException(status_code=401, detail=f"Invalid Token")
+    return {
+        "headers": headers,
+        "claims": claims,
+    }
