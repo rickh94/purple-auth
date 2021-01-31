@@ -1,6 +1,6 @@
 from urllib.parse import quote_plus
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from motor import motor_asyncio
 from odmantic import AIOEngine
 
@@ -22,4 +22,12 @@ async def check_client_app(app_id: str):
     client_app = await engine.find_one(ClientApp, ClientApp.app_id == app_id)
     if not client_app:
         raise HTTPException(status_code=404, detail="Could not find app.")
+    return client_app
+
+
+async def check_refresh_client_app(client_app: ClientApp = Depends(check_client_app)):
+    if not client_app.get_refresh_key():
+        raise HTTPException(
+            status_code=403, detail="Refreshing isn't supported on this app"
+        )
     return client_app

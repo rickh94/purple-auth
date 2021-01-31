@@ -1,4 +1,5 @@
-FROM python:3.9
+ARG ARCH=
+FROM ${ARCH}python:3.9
 
 RUN pip install pipenv
 ADD ./Pipfile .

@@ -1,5 +1,3 @@
-from jwcrypto import jwk
-
 from app.io.models import ClientApp
 
 

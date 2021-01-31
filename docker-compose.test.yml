@@ -10,8 +10,6 @@ services:
     build:
       context: src
       dockerfile: Dockerfile.test
-    env_file:
-      - test_env.txt
     environment:
       - DB_HOST=mongo-test
       - REDIS_HOST=redis-test
