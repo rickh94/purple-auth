@@ -8,4 +8,4 @@ RUN pipenv install --system --deploy
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
-CMD uvicorn --uds /socks/auth-service.sock --log-level debug app.main:app
+CMD uvicorn --host '0.0.0.0' --port 80 --log-level debug app.main:app
