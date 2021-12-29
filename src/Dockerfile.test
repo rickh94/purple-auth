@@ -1,12 +1,12 @@
 FROM python:3.9
 
-RUN pip install pipenv
-ADD ./Pipfile .
-ADD ./Pipfile.lock .
-RUN pipenv install --system --dev
+RUN python3 -m pip install poetry
+ADD ./pyproject.toml .
+ADD ./poetry.lock .
+RUN poetry install --no-root
 
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
 ADD ./.coveragerc .
-CMD pytest --rootdir=/app/app --cov-config=./.coveragerc --cov=app --cov-report=xml --cov-report=term && cp coverage.xml /coverage
+CMD poetry run pytest --rootdir=/app/app --cov-config=./.coveragerc --cov=app --cov-report=xml --cov-report=term && cp coverage.xml /coverage

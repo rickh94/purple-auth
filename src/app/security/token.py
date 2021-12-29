@@ -4,11 +4,12 @@ import uuid
 import python_jwt as jwt
 from fastapi import Header, Depends, HTTPException
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
-from passlib.context import CryptContext
 
 from app import config
 from app.dependencies import engine, check_client_app
-from app.io.models import ClientApp, RefreshToken
+from app.models.client_app_model import ClientApp
+from app.models.token_models import RefreshToken
+from app.security.context import PWD_CONTEXT
 
 
 class TokenVerificationError(BaseException):
@@ -47,9 +48,6 @@ def generate(email: str, client_app: ClientApp) -> str:
 
 def verify(token: str, client_app: ClientApp) -> (dict, dict):
     return _check_token(token, client_app.get_key(), client_app.app_id)
-
-
-PWD_CONTEXT = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 
 async def generate_refresh_token(email: str, client_app: ClientApp) -> str:

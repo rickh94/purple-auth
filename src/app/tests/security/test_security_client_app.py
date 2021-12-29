@@ -50,7 +50,7 @@ def test_exported_key_cannot_sign_keys(fake_client_app, fake_email):
     payload = {"iss": f"{config.ISSUER}/12345", "sub": fake_email}
 
     token = None
-    with pytest.raises(KeyError):
+    with pytest.raises(TypeError):
         token = jwt.generate_jwt(
             payload,
             exported_key,

@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Query, HTTPException, Depends, Body
-from starlette.responses import RedirectResponse
+from fastapi import APIRouter, HTTPException, Depends
 
 from app import config
-from app.dependencies import check_client_app
+from app.dependencies import check_client_app, client_app_use_quota
 from app.io import email as io_email
-from app.io.models import ClientApp, IssueToken, AuthRequest, ConfirmCode
+from app.models.client_app_model import ClientApp
+from app.models.auth_models import AuthRequest, ConfirmCode
+from app.models.token_models import IssueToken
 from app.security import otp as security_otp, token as security_token
 
 otp_router = APIRouter()
@@ -13,7 +14,7 @@ otp_router = APIRouter()
 @otp_router.post("/request/{app_id}")
 async def request_otp(
     auth_request: AuthRequest,
-    client_app: ClientApp = Depends(check_client_app),
+    client_app: ClientApp = Depends(client_app_use_quota),
 ):
     """Request an authentication code for an email"""
     user_code = security_otp.generate(auth_request.email, client_app.app_id)

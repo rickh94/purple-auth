@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.responses import RedirectResponse
 
 from app import config
-from app.dependencies import check_client_app
-from app.io.models import AuthRequest, ClientApp
+from app.dependencies import check_client_app, client_app_use_quota
+from app.models.client_app_model import ClientApp
+from app.models.auth_models import AuthRequest
 from app.io import email as io_email
 from app.security import magic as security_magic, token as security_token
 
@@ -14,7 +15,7 @@ magic_router = APIRouter()
 
 @magic_router.post("/request/{app_id}")
 async def request_magic(
-    auth_request: AuthRequest, client_app: ClientApp = Depends(check_client_app)
+    auth_request: AuthRequest, client_app: ClientApp = Depends(client_app_use_quota)
 ):
     """Request a magic authentication link"""
     magic_link = security_magic.generate(auth_request.email, client_app.app_id)

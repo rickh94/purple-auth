@@ -1,18 +1,22 @@
 import datetime
-from typing import Dict, Optional
+from typing import Optional
 
 from jwcrypto import jwk
 from odmantic import Model, Field as ODMField
-from pydantic import BaseModel, Field as PyField, EmailStr
-
+from pydantic import BaseModel, EmailStr
 
 # noinspection PyAbstractClass
 from app.config import FERNET
 
 
+class ClientAppCreate(Model):
+    pass
+
+
+# noinspection PyAbstractClass
 class ClientApp(Model):
     name: str = ODMField(..., title="Name of the app")
-    app_id: str = ODMField(..., title="app unique id")
+    app_id: str = ODMField(..., title="App unique id")
     enc_key: Optional[bytes]
     enc_refresh_key: Optional[bytes]
     refresh_token_expire_hours: Optional[int]
@@ -21,6 +25,24 @@ class ClientApp(Model):
         None,
         title="Failure Redirect URL",
         description="Redirect URL for authentication failures",
+    )
+    owner: Optional[EmailStr] = ODMField(..., title="Owner of the app")
+    quota: int = ODMField(
+        500,
+        title="Authentication Quota",
+        description="How many authentications are remaining for this app",
+    )
+    low_quota_threshold: int = ODMField(
+        10,
+        title="Low Quota Notification Threshold",
+        description="Threshold to start notifying the administrator that they "
+        "are almost out of authentications.",
+    )
+    low_quota_last_notified: datetime.datetime = ODMField(
+        datetime.datetime.fromtimestamp(0),
+        title="Date and time of last quota notification",
+        description="Stores when the last low quota email was sent to avoid spamming "
+        "the administrator",
     )
 
     def get_key(self) -> jwk.JWK:
@@ -42,46 +64,7 @@ class ClientApp(Model):
         self.enc_refresh_key = FERNET.encrypt(pem)
 
 
-# noinspection PyAbstractClass
-class RefreshToken(Model):
-    app_id: str
-    email: EmailStr
-    hash: str
-    expires: datetime.datetime
-    uid: str
-
-
 class ClientAppPublic(BaseModel):
     name: str
     app_id: str
     redirect_url: str
-
-
-class VerifiedTokenResponse(BaseModel):
-    headers: dict
-    claims: dict
-
-
-class IssueToken(BaseModel):
-    idToken: str = PyField(..., title="ID Token")
-    refreshToken: Optional[str] = PyField(
-        None,
-        title="Refresh Token",
-    )
-
-
-class AuthRequest(BaseModel):
-    email: EmailStr = PyField(..., title="User Email Address")
-
-
-class ConfirmCode(BaseModel):
-    email: EmailStr
-    code: str
-
-
-class VerifyToken(BaseModel):
-    idToken: str = PyField(..., title="ID Token")
-
-
-class RequestRefresh(BaseModel):
-    refreshToken: str = PyField(..., title="Refresh Token")

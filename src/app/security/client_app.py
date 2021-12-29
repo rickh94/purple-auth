@@ -1,4 +1,4 @@
-from app.io.models import ClientApp
+from app.models.client_app_model import ClientApp
 
 
 def export_public_key(client_app: ClientApp) -> dict:

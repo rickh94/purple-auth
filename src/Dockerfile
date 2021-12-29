@@ -1,11 +1,11 @@
 FROM python:3.9
 
-RUN pip install pipenv
-ADD ./Pipfile .
-ADD ./Pipfile.lock .
-RUN pipenv install --system --deploy
+RUN python3 -m pip install poetry
+ADD ./pyproject.toml .
+ADD ./poetry.lock .
+RUN poetry install --no-dev --no-root
 
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
-CMD uvicorn --uds /socks/auth-service.sock --log-level debug app.main:app
+CMD poetry run uvicorn --uds /socks/auth-service.sock --log-level debug app.main:app

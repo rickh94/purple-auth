@@ -3,12 +3,9 @@ import secrets
 from typing import Optional
 from urllib.parse import quote_plus, unquote
 
-from passlib.context import CryptContext
-
 from app import config
 from app.io.redis_interface import MAGIC_STORE
-
-PWD_CONTEXT = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
+from app.security.context import PWD_CONTEXT
 
 
 def generate(email: str, app_id: str) -> str:

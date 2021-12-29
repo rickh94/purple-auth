@@ -5,12 +5,10 @@ from unittest import mock
 from unittest.mock import AsyncMock
 
 import pytest
-from faker import Faker
-from odmantic import AIOEngine
 
 from app import config
-from app.dependencies import engine
-from app.io.models import RefreshToken, ClientApp
+from app.models.client_app_model import ClientApp
+from app.models.token_models import RefreshToken
 from app.security import token as security_token
 from jwcrypto import jwk
 import python_jwt as jwt

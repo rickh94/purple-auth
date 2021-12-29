@@ -1,16 +1,14 @@
-from fastapi import APIRouter, Query, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.dependencies import (
     check_client_app,
     check_refresh_client_app,
 )
-from app.io.models import (
+from app.models.client_app_model import (
     ClientApp,
-    VerifiedTokenResponse,
-    IssueToken,
-    VerifyToken,
-    RequestRefresh,
 )
+from app.models.auth_models import VerifyToken, RequestRefresh
+from app.models.token_models import VerifiedTokenResponse, IssueToken
 from app.security import token as security_token
 
 token_router = APIRouter()

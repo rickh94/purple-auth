@@ -2,12 +2,9 @@ import datetime
 import secrets
 import string
 
-from passlib.context import CryptContext
-
 from app import config
 from app.io.redis_interface import OTP_STORE
-
-PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.security.context import PWD_CONTEXT
 
 
 def generate(email: str, app_id: str) -> str:

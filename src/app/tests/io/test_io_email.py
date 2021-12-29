@@ -41,3 +41,18 @@ async def test_send_failure(mock_aioresponse):
             from_name="Test Sender",
         )
     assert str(error_info.value) == "Something went wrong: Bad Request"
+
+
+@pytest.mark.asyncio
+async def test_send_with_reply_to(mock_aioresponse):
+    mock_aioresponse.post(config.MAILGUN_ENDPOINT, status=200)
+    await io_email.send(
+        to="test@example.com",
+        subject="Test Subject",
+        text="Test text",
+        from_name="Test Sender",
+        reply_to="reply@example.com",
+    )
+
+    request = list(mock_aioresponse.requests.values())[0][0]
+    assert request.kwargs["data"]["h:Reply-To"] == "reply@example.com"

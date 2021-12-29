@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.dependencies import check_client_app
-from app.io.models import ClientApp, ClientAppPublic
+from app.models.client_app_model import ClientApp, ClientAppPublic
 from app.security import client_app as security_client_app
 
 client_app_router = APIRouter()

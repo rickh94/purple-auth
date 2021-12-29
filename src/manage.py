@@ -1,4 +1,3 @@
-import os
 import uuid
 from typing import Optional
 from urllib.parse import quote_plus
@@ -8,7 +7,7 @@ import pymongo
 import click
 
 from app import config
-from app.io.models import ClientApp
+from app.models.client_app_model import ClientApp
 
 db_uri = "mongodb://{username}:{password}@{host}:{port}".format(
     username=quote_plus(config.DB_USERNAME),

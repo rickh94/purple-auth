@@ -33,7 +33,7 @@ def fake_code():
     return "11111111"
 
 
-def test_request_otp(mocker, test_client, fake_client_app, fake_email):
+def test_request_otp(monkeypatch, mocker, test_client, fake_client_app, fake_email):
     mock_send_email = mocker.patch("app.routes.otp.io_email.send")
     mock_otp_generate = mocker.patch(
         "app.routes.otp.security_otp.generate", return_value="11111111"
@@ -81,6 +81,164 @@ def test_request_otp_email_failed(
     )
 
     assert response.status_code == 500
+
+
+def test_request_otp_fails_out_of_quota(
+    mocker, test_client, fake_email, fake_client_app_out_of_quota
+):
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+
+    response = test_client.post(
+        f"/otp/request/{fake_client_app_out_of_quota.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 503
+    assert (
+        response.json()["detail"]
+        == "This app does not have any authentications remaining. Please contact "
+        "your administrator"
+    )
+
+    mock_send_email.assert_called_once_with(
+        to=fake_client_app_out_of_quota.owner,
+        subject=f"{fake_client_app_out_of_quota.name} is out of Authentications",
+        text=f"{fake_client_app_out_of_quota.name} has reached its quota of "
+        f"authentications. No further authentications will be processed. "
+        f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
+        f"Development\nhttps://rickhenry.dev",
+        from_name="Rick Henry",
+        reply_to="rickhenry@rickhenry.dev",
+    )
+
+
+def test_request_otp_uses_quota(
+    mocker, test_client, fake_email, fake_client_app_use_quota
+):
+    _mock_send_email = mocker.patch("app.routes.otp.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+    mock_save = mocker.patch("app.dependencies.engine.save")
+    prev_quota = fake_client_app_use_quota.quota
+
+    response = test_client.post(
+        f"/otp/request/{fake_client_app_use_quota.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 200
+    assert fake_client_app_use_quota.quota == prev_quota - 1
+
+    mock_save.assert_called_once_with(fake_client_app_use_quota)
+
+
+def test_request_otp_notifies_low_quota(
+    mocker, test_client, fake_email, fake_client_app_low_quota
+):
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+
+    response = test_client.post(
+        f"/otp/request/{fake_client_app_low_quota.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 200
+
+    assert mock_send_email.call_count == 2
+    mock_send_email.assert_any_call(
+        to=fake_client_app_low_quota.owner,
+        subject=f"{fake_client_app_low_quota.name} is almost out of Authentications",
+        text=f"{fake_client_app_low_quota.name} has almost reached its quota of "
+        f"authentications. It will process {fake_client_app_low_quota.quota} more "
+        f"authentications before it stops authenticating users. "
+        f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
+        f"Development\nhttps://rickhenry.dev",
+        from_name="Rick Henry",
+        reply_to="rickhenry@rickhenry.dev",
+    )
+
+
+def test_request_otp_notifies_low_quota_only_once_per_day(
+    mocker, test_client, fake_email, fake_client_app_low_quota_notified_today
+):
+    fca = fake_client_app_low_quota_notified_today
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+
+    response = test_client.post(
+        f"/otp/request/{fca.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 200
+
+    assert mock_send_email.call_count == 1
+
+
+def test_request_otp_notifies_low_quota_next_day(
+    mocker, test_client, fake_email, fake_client_app_low_quota_notified_yesterday
+):
+    fca = fake_client_app_low_quota_notified_yesterday
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+
+    response = test_client.post(
+        f"/otp/request/{fca.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 200
+
+    assert mock_send_email.call_count == 2
+    mock_send_email.assert_any_call(
+        to=fca.owner,
+        subject=f"{fca.name} is almost out of Authentications",
+        text=f"{fca.name} has almost reached its quota of "
+        f"authentications. It will process {fca.quota} more "
+        f"authentications before it stops authenticating users. "
+        f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
+        f"Development\nhttps://rickhenry.dev",
+        from_name="Rick Henry",
+        reply_to="rickhenry@rickhenry.dev",
+    )
+
+
+def test_request_otp_notifies_low_quota_custom_threshold(
+    mocker, test_client, fake_email, fake_client_app_low_quota_custom_threshold
+):
+    fca = fake_client_app_low_quota_custom_threshold
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+
+    response = test_client.post(
+        f"/otp/request/{fca.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 200
+
+    assert mock_send_email.call_count == 2
+    mock_send_email.assert_any_call(
+        to=fca.owner,
+        subject=f"{fca.name} is almost out of Authentications",
+        text=f"{fca.name} has almost reached its quota of "
+        f"authentications. It will process {fca.quota} more "
+        f"authentications before it stops authenticating users. "
+        f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
+        f"Development\nhttps://rickhenry.dev",
+        from_name="Rick Henry",
+        reply_to="rickhenry@rickhenry.dev",
+    )
 
 
 def test_confirm_otp(

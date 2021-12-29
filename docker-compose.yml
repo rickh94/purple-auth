@@ -13,15 +13,15 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "${DB_USERNAME}"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "${DB_PASSWORD}"
+      ME_CONFIG_MONGODB_URL: "mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongo:27017/"
     depends_on:
       - mongo
+      - app
 
   app:
     build:
       context: src
-      dockerfile: src/Dockerfile.dev
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     environment:
@@ -42,7 +42,7 @@ services:
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
     ports:
-      - "8080:80"
+      - "8089:80"
     depends_on:
       - app
 
