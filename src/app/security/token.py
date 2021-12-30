@@ -1,12 +1,13 @@
 import datetime
 import uuid
 
+import mongox
 import python_jwt as jwt
 from fastapi import Header, Depends, HTTPException
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 
 from app import config
-from app.dependencies import engine, check_client_app
+from app.dependencies import check_client_app
 from app.models.client_app_model import ClientApp
 from app.models.token_models import RefreshToken
 from app.security.context import PWD_CONTEXT
@@ -65,34 +66,35 @@ async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
     expires = datetime.datetime.now() + datetime.timedelta(
         hours=client_app.refresh_token_expire_hours
     )
-    save_token = RefreshToken(
+    await RefreshToken(
         app_id=client_app.app_id,
         email=email,
         hash=token_hash,
         expires=expires,
         uid=uid,
-    )
-    await engine.save(save_token)
+    ).insert()
     return token
 
 
 async def _find_refresh_token(claims: dict, client_app: ClientApp):
-    found_rt = await engine.find_one(
-        RefreshToken,
-        (RefreshToken.email == claims["sub"])
-        & (RefreshToken.app_id == client_app.app_id)
-        & (RefreshToken.uid == claims["uid"]),
-    )
-    if found_rt is None:
+    try:
+        return (
+            await RefreshToken.query(RefreshToken.email == claims["sub"])
+            .query(RefreshToken.app_id == client_app.app_id)
+            .query(RefreshToken.uid == claims["uid"])
+            .get()
+        )
+    except mongox.NoMatchFound:
         raise TokenVerificationError("Could not find matching token.")
-    return found_rt
+    except mongox.MultipleMatchesFound:
+        raise TokenVerificationError("Something has gone wrong")
 
 
 async def verify_refresh_token(token: str, client_app: ClientApp) -> str:
     _, claims = _check_token(token, client_app.get_refresh_key(), client_app.app_id)
     found_rt = await _find_refresh_token(claims, client_app)
     if found_rt.expires <= datetime.datetime.now():
-        await engine.delete(found_rt)
+        await found_rt.delete()
         raise TokenVerificationError("Expired Token. Please log in again.")
     if PWD_CONTEXT.verify(token, found_rt.hash):
         return generate(claims["sub"], client_app)
@@ -104,15 +106,16 @@ async def delete_refresh_token(refresh_token: str, client_app: ClientApp):
         refresh_token, client_app.get_refresh_key(), client_app.app_id
     )
     found_rt = await _find_refresh_token(claims, client_app)
-    await engine.delete(found_rt)
+    await found_rt.delete()
 
 
 async def delete_all_refresh_tokens(email: str, client_app: ClientApp):
-    async for rt in engine.find(
-        RefreshToken,
-        (RefreshToken.email == email) & (RefreshToken.app_id == client_app.app_id),
+    for rt in (
+        await RefreshToken.query(RefreshToken.email == email)
+        .query(RefreshToken.app_id == client_app.app_id)
+        .all()
     ):
-        await engine.delete(rt)
+        await rt.delete()
 
 
 async def authorization_header(

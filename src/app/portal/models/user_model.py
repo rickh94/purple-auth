@@ -1,15 +1,21 @@
 from typing import Optional
 
-from odmantic import Model, Field as ODMField
-
+import mongox
 from pydantic import EmailStr, BaseModel
 
 
 # noinspection PyAbstractClass
-class User(Model):
-    email: EmailStr = ODMField(..., title="User Email Address", unique=True)
-    name: Optional[str] = ODMField(None, title="User Name")
-    disabled: bool = ODMField(False, title="Disabled")
+from app.database import db
+
+
+class User(mongox.Model):
+    email: EmailStr = mongox.Field(..., title="User Email Address", unique=True)
+    name: Optional[str] = mongox.Field(None, title="User Name")
+    disabled: bool = mongox.Field(False, title="Disabled")
+
+    class Meta:
+        collection = db.get_collection("portal_users")
+        indexes = [mongox.Index("email", unique=True)]
 
 
 class UserPublic(BaseModel):

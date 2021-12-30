@@ -1,18 +1,24 @@
 from typing import Optional
 
-from app.dependencies import engine
+import mongox
+from fastapi import HTTPException
+
 from app.portal.models.user_model import User
 
 
 async def get_user_by_email(email: str) -> Optional[User]:
-    user = await engine.find_one(User, User.email == email)
-    return user
+    try:
+        return await User.query(User.email == email).get()
+    except mongox.NoMatchFound:
+        return None
+    except mongox.MultipleMatchesFound:
+        raise HTTPException(
+            status_code=500, detail="Multiple users found with the same email"
+        )
 
 
 async def create_user_from_email(email: str) -> User:
-    user = User(email=email)
-    await engine.save(user)
-    return user
+    return await User(email=email).insert()
 
 
 async def check_or_create_user_from_email(email: str) -> User:
@@ -23,4 +29,4 @@ async def check_or_create_user_from_email(email: str) -> User:
 
 
 async def delete_user(user: User) -> None:
-    await engine.delete(user)
+    await user.delete()

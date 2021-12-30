@@ -70,7 +70,6 @@ def test_request_magic_uses_quota(
         "app.routes.magic.security_magic.generate",
         return_value=fake_link,
     )
-    mock_save = mocker.patch("app.dependencies.engine.save")
     prev_quota = fca.quota
 
     response = test_client.post(
@@ -80,7 +79,7 @@ def test_request_magic_uses_quota(
     assert response.status_code == 200
     assert fca.quota == prev_quota - 1
 
-    mock_save.assert_called_once_with(fca)
+    fca.save.assert_called()
 
 
 def test_request_magic_fails_out_of_quota(
@@ -336,14 +335,15 @@ def test_confirm_magic_fails_with_error_url(
     mock_token_generate,
     monkeypatch,
     fake_secret,
+    create_fake_queryset,
 ):
     error_url = "https://example.com/auth-failure"
     fake_client_app_error_url = create_fake_client_app(failure_redirect_url=error_url)
 
-    async def _engine_fake_get(*args):
-        return fake_client_app_error_url
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=fake_client_app_error_url)
 
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
     response = test_client.get(
         f"/magic/confirm/{fake_client_app_error_url.app_id}?secret={fake_secret}"
         f"&id={quote_plus(fake_enc_email)}"

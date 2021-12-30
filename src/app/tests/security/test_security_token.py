@@ -4,6 +4,7 @@ import uuid
 from unittest import mock
 from unittest.mock import AsyncMock
 
+import mongox
 import pytest
 
 from app import config
@@ -43,6 +44,7 @@ def saved_refresh_token(
     pwd_context,
     monkeypatch,
     fake_uid,
+    create_fake_queryset,
 ):
     expires = datetime.datetime.now() + datetime.timedelta(hours=24)
     _saved = RefreshToken(
@@ -53,15 +55,17 @@ def saved_refresh_token(
         uid=fake_uid,
     )
 
-    async def _get_saved(*args):
-        return _saved
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_saved)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
     return _saved
 
 
 @pytest.fixture
-def generate_saved_refresh_token(fake_refresh_client_app, fake_email, pwd_context):
+def generate_saved_refresh_token(
+    fake_refresh_client_app, fake_email, pwd_context, monkeypatch, mocker
+):
     def _generate():
         uid = str(uuid.uuid4())
         payload = {
@@ -77,6 +81,8 @@ def generate_saved_refresh_token(fake_refresh_client_app, fake_email, pwd_contex
                 hours=fake_refresh_client_app.refresh_token_expire_hours
             ),
         )
+
+        mocker.patch("mongox.Model.delete")
         expires = datetime.datetime.now() + datetime.timedelta(hours=24)
         _saved = RefreshToken(
             app_id=fake_refresh_client_app.app_id,
@@ -197,11 +203,11 @@ async def test_generate_refresh_token(
     fake_email,
     fake_refresh_client_app: ClientApp,
     monkeypatch,
-    mocker,
     pwd_context,
+    mocker,
 ):
-    monkeypatch.setattr(uuid, "uuid4", lambda: "fake_uuid")
-    mock_engine = mocker.patch("app.security.token.engine", new_callable=AsyncMock)
+    fake_uuid = uuid.uuid4()
+    monkeypatch.setattr(uuid, "uuid4", lambda: fake_uuid)
     refresh_token = await security_token.generate_refresh_token(
         fake_email, fake_refresh_client_app
     )
@@ -214,9 +220,9 @@ async def test_generate_refresh_token(
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
     assert claims["iss"] == f"{config.ISSUER}/{fake_refresh_client_app.app_id}"
-    assert claims["uid"] == "fake_uuid"
+    assert claims["uid"] == str(fake_uuid)
 
-    mock_engine.save.assert_called()
+    # mock_insert.assert_called()
     # getting the seconds just right is annoying, so it's easiest just to check that
     # it's within about 10 minutes of the correct time.
     should_expire_lower_bound = (
@@ -229,14 +235,16 @@ async def test_generate_refresh_token(
         + datetime.timedelta(hours=fake_refresh_client_app.refresh_token_expire_hours)
         + datetime.timedelta(minutes=5)
     )
-    generated_rt: RefreshToken = mock_engine.save.call_args[0][0]
+    # print(dir(mock_insert))
+    generated_rt: RefreshToken = (
+        await RefreshToken.query(RefreshToken.email == claims["sub"])
+        .query(RefreshToken.app_id == fake_refresh_client_app.app_id)
+        .query(RefreshToken.uid == claims["uid"])
+        .get()
+    )
 
-    assert isinstance(generated_rt, RefreshToken)
-    assert generated_rt.email == fake_email
-    assert generated_rt.app_id == fake_refresh_client_app.app_id
     assert generated_rt.expires >= should_expire_lower_bound
     assert generated_rt.expires <= should_expire_upper_bound
-    assert generated_rt.uid == "fake_uuid"
     assert pwd_context.verify(refresh_token, generated_rt.hash)
 
 
@@ -248,12 +256,12 @@ async def test_generate_refresh_token_invalid_app(
     mocker,
 ):
     monkeypatch.setattr(uuid, "uuid4", lambda: "fake_uuid")
-    mock_engine = mocker.patch("app.security.token.engine", new_callable=AsyncMock)
+    mock_insert = mocker.patch("mongox.Model.insert")
 
     with pytest.raises(security_token.TokenCreationError):
         await security_token.generate_refresh_token(fake_email, fake_client_app)
 
-    mock_engine.save.assert_not_called()
+    mock_insert.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -269,12 +277,15 @@ async def test_verify_refresh_token(
 
 @pytest.mark.asyncio
 async def test_verify_refresh_token_not_found(
-    fake_refresh_client_app: ClientApp, monkeypatch, fake_refresh_token
+    fake_refresh_client_app: ClientApp,
+    monkeypatch,
+    fake_refresh_token,
+    create_fake_queryset,
 ):
-    async def _get_saved(*args):
-        return None
+    def _fake_query(*_args):
+        return create_fake_queryset(get_raises=mongox.NoMatchFound)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     with pytest.raises(security_token.TokenVerificationError):
         await security_token.verify_refresh_token(
@@ -284,7 +295,11 @@ async def test_verify_refresh_token_not_found(
 
 @pytest.mark.asyncio
 async def test_verify_refresh_token_expired_token(
-    fake_email, fake_refresh_client_app: ClientApp, monkeypatch, pwd_context
+    fake_email,
+    fake_refresh_client_app: ClientApp,
+    monkeypatch,
+    pwd_context,
+    create_fake_queryset,
 ):
     uid = "fake_uuid"
     expires = datetime.datetime.now() + datetime.timedelta(hours=24)
@@ -307,10 +322,10 @@ async def test_verify_refresh_token_expired_token(
         uid=uid,
     )
 
-    async def _get_saved(*args):
-        return saved_refresh_token
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=saved_refresh_token)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     with pytest.raises(security_token.TokenVerificationError):
         await security_token.verify_refresh_token(
@@ -324,13 +339,12 @@ async def test_verify_refresh_token_expired_in_database(
     fake_refresh_client_app: ClientApp,
     monkeypatch,
     pwd_context,
-    mocker,
     fake_refresh_token,
+    create_fake_queryset,
+    mocker,
 ):
-    mock_delete = mocker.patch(
-        "app.security.token.engine.delete", new_callable=AsyncMock
-    )
     expires = datetime.datetime.now() - datetime.timedelta(hours=24)
+    mocker.patch("mongox.Model.delete")
     saved_refresh_token = RefreshToken(
         app_id=fake_refresh_client_app.app_id,
         email=fake_email,
@@ -339,16 +353,16 @@ async def test_verify_refresh_token_expired_in_database(
         uid="fake_uuid",
     )
 
-    async def _get_saved(*args):
-        return saved_refresh_token
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=saved_refresh_token)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     with pytest.raises(security_token.TokenVerificationError):
         await security_token.verify_refresh_token(
             fake_refresh_token, fake_refresh_client_app
         )
-    mock_delete.assert_called()
+    saved_refresh_token.delete.assert_called()
 
 
 @pytest.mark.asyncio
@@ -358,6 +372,7 @@ async def test_verify_refresh_token_pwd_verification_failed(
     monkeypatch,
     pwd_context,
     fake_refresh_token,
+    create_fake_queryset,
 ):
     saved_refresh_token = RefreshToken(
         app_id=fake_refresh_client_app.app_id,
@@ -369,10 +384,10 @@ async def test_verify_refresh_token_pwd_verification_failed(
         uid="fake_uuid",
     )
 
-    async def _get_saved(*args):
-        return saved_refresh_token
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=saved_refresh_token)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     with pytest.raises(security_token.TokenVerificationError):
         await security_token.verify_refresh_token(
@@ -387,34 +402,31 @@ async def test_delete_refresh_token(
     fake_refresh_token,
     saved_refresh_token,
 ):
-    fake_delete: mock.MagicMock = mocker.patch("app.security.token.engine.delete")
+    fake_delete = mocker.patch("mongox.Model.delete")
 
     await security_token.delete_refresh_token(
         fake_refresh_token, fake_refresh_client_app
     )
 
-    fake_delete.assert_called_once_with(saved_refresh_token)
+    fake_delete.assert_called()
 
 
 @pytest.mark.asyncio
 async def test_delete_refresh_token_not_found(
     fake_refresh_client_app: ClientApp,
     monkeypatch,
-    mocker,
     fake_refresh_token,
+    create_fake_queryset,
 ):
-    async def _get_saved(*args):
-        return None
+    def _fake_query(*_args):
+        return create_fake_queryset(get_raises=mongox.NoMatchFound)
 
-    monkeypatch.setattr("app.security.token.engine.find_one", _get_saved)
-    fake_delete: mock.MagicMock = mocker.patch("app.security.token.engine.delete")
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     with pytest.raises(security_token.TokenVerificationError):
         await security_token.verify_refresh_token(
             fake_refresh_token, fake_refresh_client_app
         )
-
-    fake_delete.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -424,31 +436,17 @@ async def test_delete_all_refresh_tokens(
     mocker,
     generate_saved_refresh_token,
     fake_email,
+    create_fake_queryset,
 ):
     tokens = [generate_saved_refresh_token() for _ in range(10)]
 
-    class FakeResults:
-        def __init__(self, tokens):
-            self.tokens = tokens
-            self.i = 0
+    def _fake_query(*args, **kwargs):
+        return create_fake_queryset(all_return=tokens)
 
-        def __aiter__(self):
-            return self
-
-        async def __anext__(self):
-            i = self.i
-            if i >= len(self.tokens):
-                raise StopAsyncIteration
-            self.i += 1
-            return self.tokens[i]
-
-    def _find(*args):
-        return FakeResults(tokens)
-
-    monkeypatch.setattr("app.security.token.engine.find", _find)
-    fake_delete: mock.MagicMock = mocker.patch("app.security.token.engine.delete")
+    monkeypatch.setattr("app.security.token.RefreshToken.query", _fake_query)
 
     await security_token.delete_all_refresh_tokens(fake_email, fake_refresh_client_app)
 
-    for i, token in enumerate(tokens):
-        fake_delete.assert_any_call(token)
+    for token in tokens:
+        # noinspection PyUnresolvedReferences
+        token.delete.assert_called()

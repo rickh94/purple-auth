@@ -3,7 +3,6 @@ from typing import Optional
 
 import jwcrypto.jwk as jwk
 
-from app.dependencies import engine
 from app.models.client_app_model import ClientApp
 
 
@@ -31,6 +30,6 @@ async def create_client_app(
         app.refresh_token_expire_hours = refresh_token_expire_hours
 
     app.set_key(key)
-    await engine.save(app)
+    await app.insert()
 
     return app

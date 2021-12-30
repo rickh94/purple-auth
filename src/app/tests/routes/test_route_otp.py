@@ -119,7 +119,7 @@ def test_request_otp_uses_quota(
     _mock_otp_generate = mocker.patch(
         "app.routes.otp.security_otp.generate", return_value="11111111"
     )
-    mock_save = mocker.patch("app.dependencies.engine.save")
+    mocker.patch("mongox.Model.save")
     prev_quota = fake_client_app_use_quota.quota
 
     response = test_client.post(
@@ -130,7 +130,7 @@ def test_request_otp_uses_quota(
     assert response.status_code == 200
     assert fake_client_app_use_quota.quota == prev_quota - 1
 
-    mock_save.assert_called_once_with(fake_client_app_use_quota)
+    fake_client_app_use_quota.save.assert_called()
 
 
 def test_request_otp_notifies_low_quota(

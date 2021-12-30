@@ -1,7 +1,9 @@
 import datetime
 import uuid
+from unittest import mock
 
 import jwcrypto.jwk as jwk
+import mongox
 import pytest
 from faker import Faker
 from fastapi.testclient import TestClient
@@ -17,7 +19,7 @@ def test_client():
 
 
 @pytest.fixture
-def create_fake_client_app(faker):
+def create_fake_client_app(faker, mocker):
     def _create(
         app_id=None,
         refresh=False,
@@ -31,6 +33,8 @@ def create_fake_client_app(faker):
         if not app_id:
             app_id = str(uuid.uuid4())
         key = jwk.JWK.generate(kty="EC", size=2048)
+        mocker.patch("mongox.Model.delete")
+        mocker.patch("mongox.Model.save")
         _app = ClientApp(
             name=faker.company(),
             app_id=app_id,
@@ -55,130 +59,167 @@ def create_fake_client_app(faker):
 
 
 @pytest.fixture
-def fake_client_app(create_fake_client_app, monkeypatch):
+def create_fake_queryset():
+    def _create(get_return=None, all_return=None, get_raises=None, all_raises=None):
+        class FakeQuerySet:
+            def __init__(
+                self, get_return=None, all_return=None, get_raises=None, all_raises=None
+            ):
+                self.get_return = get_return
+                self.all_return = all_return
+                self.get_raises = get_raises
+                self.all_raises = all_raises
+
+            def query(self, *_args):
+                return self
+
+            async def get(self):
+                if self.get_raises:
+                    raise self.get_raises
+                return self.get_return
+
+            async def all(self):
+                if self.all_raises:
+                    raise self.all_raises
+                return self.all_return
+
+        return FakeQuerySet(
+            get_return=get_return,
+            all_return=all_return,
+            get_raises=get_raises,
+            all_raises=all_raises,
+        )
+
+    return _create
+
+
+@pytest.fixture
+def fake_client_app(create_fake_client_app, create_fake_queryset, monkeypatch):
     _fake = create_fake_client_app()
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    async def _engine_fake_save(*_args):
-        pass
-
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
-    monkeypatch.setattr("app.dependencies.engine.save", _engine_fake_save)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_refresh_client_app(create_fake_client_app, monkeypatch):
+def fake_refresh_client_app(create_fake_client_app, create_fake_queryset, monkeypatch):
     _fake = create_fake_client_app(refresh=True)
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_out_of_quota(create_fake_client_app, monkeypatch):
+def fake_client_app_out_of_quota(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
     _fake = create_fake_client_app(quota=0, owner="owner@example.com")
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_use_quota(create_fake_client_app, monkeypatch):
+def fake_client_app_use_quota(
+    create_fake_client_app, create_fake_queryset, monkeypatch, mocker
+):
     _fake = create_fake_client_app()
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_low_quota(create_fake_client_app, monkeypatch):
+def fake_client_app_low_quota(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
     _fake = create_fake_client_app(quota=5)
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    async def _engine_fake_save(*_args):
-        pass
-
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
-    monkeypatch.setattr("app.dependencies.engine.save", _engine_fake_save)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_low_quota_notified_today(create_fake_client_app, monkeypatch):
+def fake_client_app_low_quota_notified_today(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
     _fake = create_fake_client_app(
         quota=5, low_quota_last_notified=datetime.datetime.today()
     )
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    async def _engine_fake_save(*_args):
-        pass
-
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
-    monkeypatch.setattr("app.dependencies.engine.save", _engine_fake_save)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_low_quota_notified_yesterday(create_fake_client_app, monkeypatch):
+def fake_client_app_low_quota_notified_yesterday(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
     yesterday = datetime.datetime.today() - datetime.timedelta(days=1, hours=1)
     _fake = create_fake_client_app(quota=5, low_quota_last_notified=yesterday)
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    async def _engine_fake_save(*_args):
-        pass
-
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
-    monkeypatch.setattr("app.dependencies.engine.save", _engine_fake_save)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
-def fake_client_app_low_quota_custom_threshold(create_fake_client_app, monkeypatch):
+def fake_client_app_low_quota_custom_threshold(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
     _fake = create_fake_client_app(quota=98, low_quota_threshold=100)
 
-    async def _engine_fake_get(*_args):
-        return _fake
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
 
-    async def _engine_fake_save(*_args):
-        pass
-
-    monkeypatch.setattr("app.dependencies.engine.find_one", _engine_fake_get)
-    monkeypatch.setattr("app.dependencies.engine.save", _engine_fake_save)
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
 
     return _fake
 
 
 @pytest.fixture
 def app_not_found(monkeypatch):
-    async def _no_app(*args):
-        return None
+    class FakeQuerySet:
+        def __init__(self):
+            pass
 
-    monkeypatch.setattr("app.dependencies.engine.find_one", _no_app)
+        def query(self, *_args):
+            return self
+
+        async def get(self):
+            raise mongox.NoMatchFound
+
+    def _fake_query(*_args):
+        return FakeQuerySet()
+
+    monkeypatch.setattr("app.models.client_app_model.ClientApp.query", _fake_query)
 
 
 @pytest.fixture

@@ -324,7 +324,9 @@ def test_delete_all_refresh_tokens_not_supported_in_app(
     delete_all_mock.assert_not_called()
 
 
-def test_delete_refresh_token_not_found(app_not_found, test_client, delete_all_mock):
+def test_delete_all_refresh_tokens_not_found(
+    app_not_found, test_client, delete_all_mock
+):
     response = test_client.delete(
         f"/token/refresh/12345",
         headers={"Authorization": f"Bearer fake-token"},
