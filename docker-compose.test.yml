@@ -25,6 +25,7 @@ services:
       - FERNET_KEY=QwU0xmHBPLl7lY2aSVgiWE0GiJDn/ReFx/KWDjClgrA=
       - HOST=https://auth.example.com
       - PORTAL_ENABLED=1
+      - WEBMASTER_EMAIL=admin@purpleauth.com
     volumes:
       - ./src/app:/app/app
       - ./coverage:/coverage

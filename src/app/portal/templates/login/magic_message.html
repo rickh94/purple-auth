@@ -1,0 +1,21 @@
+{% extends "login/login_base.html" %}
+{% block title %}
+  Check Your Email!
+{% endblock %}
+{% block content %}
+  <div class="max-w-xs">
+    <div class="w-full">
+      <p>You should receive an email shortly with the link to authenticate you and send you
+        to the dashboard. Just click it in the next five minutes, and you're good to go!
+      </p>
+    </div>
+    <div class="my-3 w-full">
+      <a
+        href="/"
+        class="block w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:text-sm"
+      >
+        Back Home
+      </a>
+    </div>
+  </div>
+{% endblock %}

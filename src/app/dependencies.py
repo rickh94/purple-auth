@@ -17,8 +17,9 @@ async def check_client_app(app_id: str):
         raise HTTPException(status_code=404, detail="Could not find app.")
 
 
-# TODO: Some of these values should probably be un-hardcoded
 async def client_app_use_quota(client_app: ClientApp = Depends(check_client_app)):
+    if client_app.unlimited:
+        return client_app
     if client_app.quota < 1:
         await io_email.send(
             to=client_app.owner,
@@ -27,8 +28,8 @@ async def client_app_use_quota(client_app: ClientApp = Depends(check_client_app)
             f"further authentications will be processed. Please reply to this "
             f"email to purchase more.\nRick Henry\nRick Henry Development\n"
             f"https://rickhenry.dev",
-            from_name="Rick Henry",
-            reply_to="rickhenry@rickhenry.dev",
+            from_name="Purple Authentication",
+            reply_to=config.WEBMASTER_EMAIL,
         )
         raise HTTPException(
             status_code=503,
@@ -49,8 +50,8 @@ async def client_app_use_quota(client_app: ClientApp = Depends(check_client_app)
                 f"authentications before it stops authenticating users. "
                 f"Please reply to this email to purchase more.\nRick Henry"
                 f"\nRick Henry Development\nhttps://rickhenry.dev",
-                from_name="Rick Henry",
-                reply_to="rickhenry@rickhenry.dev",
+                from_name="Purple Authentication",
+                reply_to=config.WEBMASTER_EMAIL,
             )
 
     await client_app.save()

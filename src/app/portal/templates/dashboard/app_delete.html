@@ -1,0 +1,66 @@
+<form
+  hx-delete="/api/apps/{{ app.app_id }}"
+  hx-trigger="submit"
+  hx-target="#app-{{ app.app_id }}"
+  hx-swap="none"
+  x-data="{'confirmation': ''}"
+>
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-xl leading-6 font-medium text-gray-900" id="modal-title">
+      Delete App
+    </h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+      Delete the {{ app.name }} app.
+    </p>
+  </div>
+  <main class="border-t border-gray-300 py-2">
+    <div class="space-y-2 px-6 font-medium text-gray-800">
+      <p>
+        You will no longer be able to authenticate users or validate
+        existing keys from this app.
+      </p>
+      <p>If you are sure you want to delete your app,
+        <span class="font-bold text-red-500">Delete {{ app.name }}</span>
+        and click Delete below.
+      </p>
+    </div>
+    <div class="px-6 py-2">
+      <label for="confirm_reset" class="sr-only">Confirm Delete App</label>
+      <input
+        type="text" name="confirm_reset" id="confirm_reset"
+        class="text-red-600 font-bold shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md"
+        x-model="confirmation"
+        data-focusonload
+        autocomplete="off"
+      >
+    </div>
+  </main>
+  <footer class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white">
+    <button
+      type="submit"
+      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+      x-bind:disabled="confirmation !== 'Delete {{ app.name }}'"
+    >
+      Delete
+    </button>
+    <button
+      type="button"
+      class="loading-button w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+    >
+      {% include "mixins/_loader.html" %}
+    </button>
+    <button
+      type="button"
+      hx-get="/api/apps/{{ app.app_id }}"
+      hx-trigger="click"
+      hx-target="#modal-content"
+      hx-swap="innerHTML"
+      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+    >
+    <span class="submit-button">
+      Cancel
+    </span>
+      <span class="loading-button">{% include "mixins/_loader.html" %}</span>
+    </button>
+  </footer>
+</form>

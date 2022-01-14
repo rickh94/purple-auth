@@ -111,3 +111,6 @@ def test_verify_fails(
 
     mocked_magic_store.get.assert_called_once_with(f"{fake_app_id}:magic:{fake_email}")
     mocked_magic_store.expire.assert_not_called()
+
+
+# TEST that links can only be used once

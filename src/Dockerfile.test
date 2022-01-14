@@ -9,4 +9,4 @@ ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
 ADD ./.coveragerc .
-CMD poetry run pytest --rootdir=/app/app --cov-config=./.coveragerc --cov=app --cov-report=xml --cov-report=term && cp coverage.xml /coverage
+CMD poetry run pytest --rootdir=/app/app --cov-config=./.coveragerc --cov=app --cov-report=xml --cov-report=html --cov-report=term && cp coverage.xml /coverage && cp -r htmlcov /coverage

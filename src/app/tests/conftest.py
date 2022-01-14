@@ -1,6 +1,5 @@
 import datetime
 import uuid
-from unittest import mock
 
 import jwcrypto.jwk as jwk
 import mongox
@@ -11,6 +10,12 @@ from fastapi.testclient import TestClient
 from app.models.client_app_model import ClientApp
 from app.main import app
 from app.security.context import PWD_CONTEXT
+
+
+@pytest.fixture(autouse=True)
+def random_seed(faker):
+    """Set faker to a random seed so it won't use the same data for every test."""
+    faker.random.seed()
 
 
 @pytest.fixture
@@ -29,14 +34,18 @@ def create_fake_client_app(faker, mocker):
         quota=500,
         low_quota_threshold=10,
         low_quota_last_notified=None,
+        unlimited=False,
+        app_name=None,
     ):
         if not app_id:
             app_id = str(uuid.uuid4())
+        if not app_name:
+            app_name = faker.company()
         key = jwk.JWK.generate(kty="EC", size=2048)
         mocker.patch("mongox.Model.delete")
         mocker.patch("mongox.Model.save")
         _app = ClientApp(
-            name=faker.company(),
+            name=app_name,
             app_id=app_id,
             refresh_key=None,
             refresh_token_expire_hours=None,
@@ -46,6 +55,7 @@ def create_fake_client_app(faker, mocker):
             owner=owner,
             quota=quota,
             low_quota_threshold=low_quota_threshold,
+            unlimited=unlimited,
         )
         if low_quota_last_notified:
             _app.low_quota_last_notified = low_quota_last_notified
@@ -195,6 +205,20 @@ def fake_client_app_low_quota_custom_threshold(
     create_fake_client_app, create_fake_queryset, monkeypatch
 ):
     _fake = create_fake_client_app(quota=98, low_quota_threshold=100)
+
+    def _fake_query(*_args):
+        return create_fake_queryset(get_return=_fake)
+
+    monkeypatch.setattr("app.dependencies.ClientApp.query", _fake_query)
+
+    return _fake
+
+
+@pytest.fixture
+def fake_client_app_unlimited(
+    create_fake_client_app, create_fake_queryset, monkeypatch
+):
+    _fake = create_fake_client_app(quota=0, low_quota_threshold=0, unlimited=True)
 
     def _fake_query(*_args):
         return create_fake_queryset(get_return=_fake)

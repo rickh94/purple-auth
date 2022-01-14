@@ -1,0 +1,39 @@
+<div id="deletion_protection_display" class="sm:w-full sm:flex sm:justify-between">
+  {% if app.deletion_protection %}
+  Enabled
+  <button
+    type="button"
+    tabindex="0"
+    hx-get="/api/apps/{{ app.app_id }}/delete"
+    hx-target="#modal-content"
+    hx-trigger="click"
+    hx-swap="innerHTML"
+    class="ml-4 focus:outline-none focus:ring-2 hover:ring-2 hover:ring-violet-700 focus:ring-violet-700 rounded-md bg-transparent py-1 px-1 text-violet-500 font-medium focus:ring-violet-500 hover:font-violet-700"
+    title="Click to disable Deletion Protection"
+    id="disable-dp-button"
+  >
+              <span class="submit-text">
+                Disable
+              </span>
+    <span class="loading-text inverted">{% include "mixins/_loader.html" %}</span>
+  </button>
+{% else %}
+  Disabled
+  <button
+    type="button"
+    tabindex="0"
+    hx-post="/api/apps/{{ app.app_id }}/deletion-protection/enable"
+    hx-target="#deletion_protection_display"
+    hx-swap="outerHTML"
+    hx-trigger="click"
+    class="ml-4 focus:outline-none focus:ring-2 hover:ring-2 hover:ring-violet-700 focus:ring-violet-700 rounded-md bg-transparent py-1 px-1 text-violet-500 font-medium focus:ring-violet-500 hover:font-violet-700"
+    id="enable-dp-button"
+    title="Click to enable deletion protection"
+  >
+                <span class="submit-text">
+                Enable
+                </span>
+    <span class="loading-text inverted">{% include "mixins/_loader.html" %}</span>
+  </button>
+{% endif %}
+</div>

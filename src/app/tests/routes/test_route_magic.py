@@ -1,3 +1,4 @@
+import os
 import secrets
 from urllib.parse import quote_plus
 
@@ -106,8 +107,8 @@ def test_request_magic_fails_out_of_quota(
         f"authentications. No further authentications will be processed. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -137,8 +138,8 @@ def test_request_magic_notifies_low_quota(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -187,8 +188,8 @@ def test_request_magic_notifies_low_quota_next_day(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -218,9 +219,31 @@ def test_request_magic_notifies_low_quota_custom_threshold(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
+
+
+def test_request_magic_succeeds_unlimited_quota_doesnt_notify(
+    mocker, test_client, fake_email, fake_client_app_unlimited
+):
+    fca = fake_client_app_unlimited
+    fake_link = "http://auth.example.com/test123?secret=12345"
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_magic_generate = mocker.patch(
+        "app.routes.magic.security_magic.generate",
+        return_value=fake_link,
+    )
+
+    assert fca.quota == 0
+
+    response = test_client.post(
+        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+    )
+
+    assert response.status_code == 200
+    assert mock_send_email.call_count == 1
+    assert fca.quota == 0
 
 
 def test_request_magic_no_app(app_not_found, mocker, test_client, fake_email):

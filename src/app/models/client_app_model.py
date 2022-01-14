@@ -10,10 +10,7 @@ from app.config import FERNET
 from app.database import db
 
 
-class ClientAppCreate(BaseModel):
-    pass
-
-
+# Consider moving quota information into a sub-document
 # noinspection PyAbstractClass
 class ClientApp(mongox.Model):
     name: str = mongox.Field(..., title="Name of the app")
@@ -28,6 +25,12 @@ class ClientApp(mongox.Model):
         description="Redirect URL for authentication failures",
     )
     owner: Optional[EmailStr] = mongox.Field(..., title="Owner of the app")
+    unlimited: bool = mongox.Field(
+        False,
+        title="Unlimited tier app",
+        description="If enabled, app quota will be ignored. This can only be set "
+        "manually the an administrator.",
+    )
     quota: int = mongox.Field(
         500,
         title="Authentication Quota",
@@ -44,6 +47,15 @@ class ClientApp(mongox.Model):
         title="Date and time of last quota notification",
         description="Stores when the last low quota email was sent to avoid spamming "
         "the administrator",
+    )
+    deletion_protection: bool = mongox.Field(
+        True,
+        title="Deletion Protection",
+        description="If enabled, the app cannot be deleted",
+    )
+    created: datetime.datetime = mongox.Field(
+        default_factory=datetime.datetime.now,
+        title="Date and time of creation.",
     )
 
     class Meta:
@@ -67,6 +79,20 @@ class ClientApp(mongox.Model):
     def set_refresh_key(self, key: jwk.JWK):
         pem = key.export_to_pem(private_key=True, password=None)
         self.enc_refresh_key = FERNET.encrypt(pem)
+
+    @property
+    def refresh_enabled(self) -> bool:
+        return self.enc_refresh_key is not None
+
+    def change_refresh(self, enabled: bool):
+        # If the refresh state doesn't change, do nothing. (i.e. is already enabled
+        # or already disabled)
+        if self.refresh_enabled == enabled:
+            return
+        if enabled:
+            self.set_refresh_key(jwk.JWK.generate(kty="EC", size=4096))
+        elif not enabled:
+            self.enc_refresh_key = None
 
 
 class ClientAppPublic(BaseModel):

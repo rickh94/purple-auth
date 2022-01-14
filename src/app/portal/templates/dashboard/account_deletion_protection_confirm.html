@@ -1,0 +1,54 @@
+<form
+  hx-post="/auth/me/deletion-protection"
+  hx-trigger="submit"
+  hx-target="#modal-content"
+  hx-swap="none"
+>
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-xl leading-6 font-medium text-gray-900" id="modal-title">
+      Disable Deletion Protection
+    </h3>
+  </div>
+  <main class="border-t border-gray-300 py-2">
+    <div class="space-y-2 px-6 font-medium text-gray-800">
+      <p>
+        Check your email for a one time use code. Enter it below and click Confirm to
+        disable deletion protection.
+      </p>
+    </div>
+    <div class="px-6 py-2">
+      <label for="code" class="sr-only">Confirm Delete Account Code</label>
+      <input
+        type="text" name="code" id="code"
+        class="text-red-600 font-bold shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-md"
+        data-focusonload
+        autocomplete="off"
+        required
+      >
+    </div>
+    <div class="px-6" x-show="$store.responseError">
+      <div class="text-red-600 font-bold" x-text="$store.responseError"></div>
+    </div>
+  </main>
+  <footer class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white">
+    <button
+      type="submit"
+      class="submit-button w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+    >
+      Confirm
+    </button>
+    <button
+      type="button"
+      class="loading-button w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+    >
+      {% include "mixins/_loader.html" %}
+    </button>
+    <button
+      type="button"
+      @click="$store.modal.open = false"
+      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+    >
+      Cancel
+    </button>
+  </footer>
+</form>

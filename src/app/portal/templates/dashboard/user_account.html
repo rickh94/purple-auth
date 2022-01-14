@@ -1,0 +1,106 @@
+<section class="mb-4" id="user_account">
+  <h2 class="text-gray-700 text-xl font-medium tracking-wide">Your Account</h2>
+  <form
+    hx-put="/auth/me"
+    hx-target="#user_account"
+    hx-trigger="submit"
+    x-data="{profileMode: 'viewing'}"
+  >
+    <div class="max-w-xl mt-4 rounded-lg bg-white shadow">
+      <div class="overflow-hidden">
+        <div class="border-t border-gray-200 px-4 sm:p-0">
+          <dl class="sm:divide-y sm:divide-gray-300">
+            <div
+              class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+              x-bind:class="profileMode === 'editing' ? 'bg-violet-50' : ''"
+            >
+              <dt class="text-sm font-medium text-gray-500">
+                Name
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div x-bind:class="profileMode === 'editing' ? 'hidden' : ''">
+                  {{ user.name or "" }}
+                </div>
+                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'">
+                  <label for="name" class="sr-only">Your Name</label>
+                  <input
+                    type="text" name="name" id="name"
+                    class="shadow-sm focus:ring-violet-500 focus:border-violet-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    value="{{ user.name or "" }}"
+                  >
+                </div>
+              </dd>
+            </div>
+            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">
+                Email
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                <div x-bind:class="profileMode === 'editing' ? 'hidden' : ''">
+                  {{ user.email }}
+                </div>
+                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'">
+                  Please
+                  <a
+                    href="mailto:{{ config.webmaster_email }}"
+                    class="text-violet-500 hover:text-violet-700 hover:underline active:underline"
+                  >
+                    send me an email</a>
+                  to change the email address associated with your account.
+                </div>
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <div
+          class="space-y-3 sm:space-y-0 bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white rounded-b-lg"
+          x-show="profileMode !== 'editing'"
+        >
+          <button
+            type="button" @click="profileMode = 'editing'"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-violet-600 text-base font-medium text-white hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+            hx-get="/auth/me/delete"
+            hx-target="#modal-content"
+            hx-trigger="click"
+            hx-swap="innerHTML"
+          >
+            <span class="submit-button">
+              Delete
+            </span>
+            <span class="loading-button">{% include "mixins/_loader.html" %}</span>
+          </button>
+        </div>
+        <div
+          class="space-y-3 sm:space-y-0 bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white"
+          x-show="profileMode === 'editing'"
+        >
+          <button
+            type="submit"
+            class="submit-button w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-violet-600 text-base font-medium text-white hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            class="loading-button w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-violet-600 text-base font-medium text-white hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            {% include "mixins/_loader.html" %}
+          </button>
+          <button
+            type="button" @click="profileMode = 'viewing'"
+            class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            title="Stop Editing"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

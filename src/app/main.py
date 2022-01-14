@@ -9,8 +9,10 @@ from app import config
 from app.config import PORTAL_ENABLED, HOST
 from app.models.client_app_model import ClientApp
 from app.models.token_models import RefreshToken
+from app.portal.routes.api import portal_api_router
 from app.portal.routes.auth import portal_auth_router
 from app.portal.routes.views import portal_router
+from app.portal.services.ensure_portal_app import ensure_portal_app
 from app.routes.client_app import client_app_router
 from app.routes.magic import magic_router
 from app.routes.otp import otp_router
@@ -36,9 +38,9 @@ async def prepare_db():
     await RefreshToken.create_indexes()
 
 
-# TODO: conditionally create portal app and ensure creation in database on startup.
 if PORTAL_ENABLED:
     app.include_router(portal_auth_router, prefix="/auth", tags=["portal auth"])
+    app.include_router(portal_api_router, prefix="/api", tags=["portal api"])
 
     app.include_router(portal_router, prefix="", tags=["portal"])
     static_path = Path(__file__).parent / "static"
@@ -49,17 +51,7 @@ if PORTAL_ENABLED:
     from app.portal.models.user_model import User
 
     @app.on_event("startup")
-    async def ensure_portal_app():
+    async def prepare_portal_dbs():
         await User.create_indexes()
-        await user_crud.check_or_create_user_from_email("rickhenry@rickhenry.dev")
-        try:
-            await ClientApp.query(ClientApp.app_id == "0").get()
-        except mongox.NoMatchFound:
-            redirect_url = f"{HOST}/auth/confirm/magic"
-            await clientapp_crud.create_client_app(
-                app_name="Purple Auth Portal",
-                owner="rickhenry@rickhenry.dev",
-                redirect_url=redirect_url,
-                refresh=True,
-                app_id="0",
-            )
+        await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
+        await ensure_portal_app()

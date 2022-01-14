@@ -1,0 +1,5 @@
+$1.00 / 500 auths
+$2.00 / 1000 auths + 50 bonus (5% bonus)
+$5.00 / 2500 auths + 250 bonus (10% bonus)
+$10.00 / 5000 auths + 1000 bonus (20% bonus)
+$15.00 / month unlimited auths

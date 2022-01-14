@@ -1,3 +1,4 @@
+import os
 from unittest.mock import AsyncMock
 
 import pytest
@@ -107,8 +108,8 @@ def test_request_otp_fails_out_of_quota(
         f"authentications. No further authentications will be processed. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -157,8 +158,8 @@ def test_request_otp_notifies_low_quota(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -206,8 +207,8 @@ def test_request_otp_notifies_low_quota_next_day(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
 
 
@@ -236,9 +237,29 @@ def test_request_otp_notifies_low_quota_custom_threshold(
         f"authentications before it stops authenticating users. "
         f"Please reply to this email to purchase more.\nRick Henry\nRick Henry "
         f"Development\nhttps://rickhenry.dev",
-        from_name="Rick Henry",
-        reply_to="rickhenry@rickhenry.dev",
+        from_name="Purple Authentication",
+        reply_to=os.getenv("WEBMASTER_EMAIL"),
     )
+
+
+def test_request_otp_succeeds_unlimited_quota_doesnt_notify(
+    mocker, test_client, fake_email, fake_client_app_unlimited
+):
+    fca = fake_client_app_unlimited
+    mock_send_email = mocker.patch("app.dependencies.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate",
+        return_value="111111",
+    )
+    assert fca.quota == 0
+
+    response = test_client.post(
+        f"/otp/request/{fca.app_id}", json={"email": fake_email}
+    )
+
+    assert response.status_code == 200
+    assert mock_send_email.call_count == 1
+    assert fca.quota == 0
 
 
 def test_confirm_otp(

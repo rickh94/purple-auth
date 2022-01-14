@@ -1,0 +1,71 @@
+<form
+  hx-post="/api/apps/{{ app.app_id }}/rotate-keys"
+  hx-trigger="submit"
+  hx-swap="none"
+  x-data="{'confirmation': ''}"
+>
+  <header class="px-4 py-5 sm:px-6">
+    <h3 class="text-xl leading-6 font-medium text-gray-900" id="modal-title">
+      Change Keys
+    </h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+      Delete and generate new secret keys for {{ app.name }}.
+    </p>
+  </header>
+  <section class="border-t border-gray-300 py-2">
+    <p class="px-6 text-sm text-gray-800">
+      {{ app.name }}'s current secret keys will be deleted and replace with newly
+      generated keys. All issued ID and Refresh tokens will become invalid, and newly
+      issued tokens cannot be validated against the old public keys. You will need to get
+      the new public keys to validate any new tokens, so be aware of anywhere they might
+      be cached. (The Python purple auth client does cache the keys, but only in memory,
+      so a restart will get the new ones.)
+    </p>
+  </section>
+  <section class="border-t border-gray-300 py-2">
+    <div class="px-6 font-medium text-gray-800">If you are sure that you want
+      to reset the keys, type
+      <span class="text-amber-500">Reset {{ app.name }} Keys</span> into the
+      box below and click reset.
+    </div>
+    <div class="px-6 py-2">
+      <label for="confirm_reset" class="sr-only">Confirm reset app
+        keys</label>
+      <input
+        type="text" name="confirm_reset" id="confirm_reset"
+        class="text-amber-600 font-bold shadow-sm focus:ring-amber-500 focus:border-amber-500 block w-full sm:text-sm border-gray-300 rounded-md"
+        x-model="confirmation"
+        data-focusonload
+        autocomplete="off"
+      >
+    </div>
+  </section>
+  <footer class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white">
+    <button
+      type="submit"
+      class="submit-button w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+      x-bind:disabled="confirmation !== 'Reset {{ app.name }} Keys'"
+    >
+      Reset Keys
+    </button>
+    <button
+      type="button"
+      class="loading-button w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-600"
+    >
+      {% include "mixins/_loader.html" %}
+    </button>
+    <button
+      type="button"
+      hx-get="/api/apps/{{ app.app_id }}"
+      hx-trigger="click"
+      hx-target="#modal-content"
+      hx-swap="innerHTML"
+      class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+    >
+    <span class="submit-button">
+      Cancel
+    </span>
+      <span class="loading-button inverted">{% include "mixins/_loader.html" %}</span>
+    </button>
+  </footer>
+</form>

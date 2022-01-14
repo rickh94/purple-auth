@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+
+.loading-button {
+    display: none;
+}
+
+.htmx-request .submit-button {
+    display: none;
+}
+
+.htmx-request .loading-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.htmx-request > .submit-text  {
+    display: none;
+}
+
+.htmx-request > .loading-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-text {
+    display: none;
+}
+
+.loader-dot {
+    background: #fff;
+}
+
+.inverted .loader-dot {
+    @apply bg-gray-800;
+}
+
+.a-delay-250 {
+    animation-delay: 250ms;
+}
+
+.a-delay-750 {
+    animation-delay: 750ms;
+}
+
+.a-delay-500 {
+    animation-delay: 500ms;
+}

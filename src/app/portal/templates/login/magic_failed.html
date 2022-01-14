@@ -1,0 +1,22 @@
+{% extends "login/login_base.html" %}
+{% block title %}
+  Invalid Link
+{% endblock %}
+{% block content %}
+  <div class="max-w-xs">
+    <div class="w-full">
+      <p>It looks like the link you used to login is either expired or invalid.
+        Please try to login again and remember to click the link within five minutes.
+        You can also get a One-Time passcode instead.
+      </p>
+    </div>
+    <div class="my-3 w-full">
+      <a
+        href="/login"
+        class="block w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 sm:mt-0 sm:text-sm"
+      >
+        Login Again
+      </a>
+    </div>
+  </div>
+{% endblock %}

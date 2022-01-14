@@ -1,0 +1,734 @@
+{% extends "base.html" %}
+{% block body %}
+  <main class="bg-gray-800" id="main">
+    <div class="mx-auto max-w-7xl w-full pt-12 pb-20 text-center">
+      <header class="max-w-lg mx-auto space-y-2 mb-12">
+        <h1 class="font-bold text-6xl text-violet-400">How It Works</h1>
+        <p class="text-gray-100">Below I've listed the Authentication flows for the user, as well the developer/backend
+          process.</p>
+      </header>
+      <div class="w-full lg:grid lg:gap-4 grid-cols-1 lg:grid-cols-2  lg:max-w-5xl mx-auto">
+        <section class="w-full sm:max-w-lg my-2 lg:my-0 mx-auto">
+          <div class="bg-white overflow-hidden shadow sm:rounded-lg">
+            <header class="mt-6">
+              <h2 class="text-2xl font-bold leading-7 text-gray-800 sm:truncate">
+                Passcode Flow
+              </h2>
+            </header>
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flow-root">
+                <ul role="list" class="-mb-8">
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/globe-alt -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-white h-5 w-5" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Enter email and request login code
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/inbox-in -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path
+                                d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z" />
+                              <path
+                                d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Receive email with code</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Email
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/login -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Enter received code</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-violet-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Code is checked by the server</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            My Backend
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/identification -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">User receives credentials</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="w-full my-2 sm:max-w-lg mx-auto lg:my-0">
+
+          <div class="bg-white overflow-hidden shadow sm:rounded-lg">
+            <header class="mt-6">
+              <h2 class="text-2xl font-bold leading-7 text-gray-800 sm:truncate">
+                Magic Link Flow
+              </h2>
+            </header>
+            <div class="px-4 py-5 sm:p-6">
+              <!-- Content goes here -->
+              <!-- This example requires Tailwind CSS v2.0+ -->
+              <div class="flow-root">
+                <ul role="list" class="-mb-8">
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/globe-alt -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-white h-5 w-5" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Enter email and request magic link
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/inbox-in -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path
+                                d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z" />
+                              <path
+                                d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Receive email with magic link</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Email
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/cursor-click -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Click link</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Email
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-violet-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Link is validated by the server</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            My Backend
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/identification -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">User is redirected to your site with credentials
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="w-full my-2 sm:max-w-lg mx-auto lg:my-0">
+          <div class="bg-white overflow-hidden shadow sm:rounded-lg">
+            <header class="mt-6">
+              <h2 class="text-2xl font-bold leading-7 text-gray-800 sm:truncate">
+                Developer Process
+              </h2>
+            </header>
+            <div class="px-4 py-5 sm:p-6">
+              <!-- Content goes here -->
+              <!-- This example requires Tailwind CSS v2.0+ -->
+              <div class="flow-root">
+                <ul role="list" class="-mb-8">
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-violet-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/login -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">
+                              <a href="/login" class="text-violet-600 hover:underline">
+                                Register</a>
+                              to start creating apps
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Here
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-violet-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/adjustments -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path
+                                d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Create a new app in the dashboard</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Dashboard
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Implement the appropriate
+                              <a href="/docs" class="text-sky-600 hover:underline">
+                                API calls</a> with your App ID.
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Log in Users</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            My Backend
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/emoji-happy -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Get on with building your app
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Your Site
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="w-full my-2 sm:max-w-lg mx-auto lg:my-0">
+          <div class="bg-white overflow-hidden shadow sm:rounded-lg">
+            <header class="mt-6">
+              <h2 class="text-2xl font-bold leading-7 text-gray-800 sm:truncate">
+                Behind the Scenes
+              </h2>
+              <div class="z-20 mt-2 text-gray-400 italic text-sm text-center">Want more detail? View the
+                <a href="/tech-docs" class="text-gray-700 hover:underline">technical documentation</a>
+              </div>
+            </header>
+            <div class="px-4 py-5 sm:p-6">
+              <!-- Content goes here -->
+              <!-- This example requires Tailwind CSS v2.0+ -->
+              <div class="flow-root">
+                <ul role="list" class="-mb-8">
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-rose-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/switch-horizontal -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path
+                                d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">
+                              Receive request for login code or link
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            API
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-violet-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/adjustments -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path d="M13 7H7v6h6V7z" />
+                              <path fill-rule="evenodd"
+                                    d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Generate secret code or link</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Backend
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z" />
+                              <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z" />
+                              <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z" />
+                            </svg>
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Hash secret and save it to the cache </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Redis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-rose-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/switch-horizontal -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path
+                                d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">
+                              Receive request from user with code or link
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            API
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Validate code or link and generate token</p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            My Backend
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/code -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z" />
+                              <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z" />
+                              <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z" />
+                            </svg>
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Generate refresh token and save hash to database
+                              (if enabled)
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Database
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="relative pb-8">
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/identification -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Send credential back to user
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            API
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="relative pb-8">
+                      <div class="relative flex space-x-3">
+                        <div>
+                          <span
+                            class="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center ring-8 ring-white">
+                            <!-- Heroicon name: solid/trash -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div>
+                            <p class="text-sm text-gray-700 text-left">Expire secret after it is used or is five minutes old
+                            </p>
+                          </div>
+                          <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                            Redis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+{% endblock body %}

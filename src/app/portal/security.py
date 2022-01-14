@@ -1,3 +1,6 @@
+import logging
+from typing import Optional
+
 import purple_auth_client as pac
 from fastapi import HTTPException, Security, Depends
 from fastapi.openapi.models import OAuthFlows
@@ -41,6 +44,9 @@ class ServiceAuthentication(OAuth2):
             raise HTTPException(status_code=401, detail="Not Authorized")
         return token
 
+    def get_refresh_token(self, request: Request) -> str:
+        return request.cookies.get(self.refresh_token_name)
+
 
 # def validate_email(email) -> bool:
 #     if not USE_WHITELIST:
@@ -58,7 +64,14 @@ oauth2_scheme = ServiceAuthentication(
     refresh_token_name="refresh_token",
 )
 
-# TODO: implement try refresh
+
+async def try_refresh(request: Request) -> Optional[str]:
+    if refresh_token := oauth2_scheme.get_refresh_token(request):
+        new_token = await auth_client.refresh(refresh_token)
+        logging.debug(f"Refreshed token: {new_token}")
+        return new_token
+    logging.debug("No refresh token")
+    return None
 
 
 async def get_current_user(token: str = Security(oauth2_scheme)) -> User:

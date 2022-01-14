@@ -8,4 +8,4 @@ RUN poetry install --no-dev --no-root
 ADD ./app /app/app
 COPY ./manage.py /app
 WORKDIR /app
-CMD poetry run uvicorn --host '0.0.0.0' --port 80 --log-level debug app.main:app
+CMD poetry run uvicorn --proxy-headers --host '0.0.0.0' --port 80 --log-level debug app.main:app
