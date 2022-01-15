@@ -20,7 +20,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "root")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "27017")
 DB_NAME = os.getenv("DB_NAME", "app")
-ISSUER = os.getenv("HOST", "http://localhost:8080")
+ISSUER = os.getenv("FQDN_HOST", "http://localhost:8080")
 # TODO: make access token expire minutes configurable
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 FERNET_KEY = os.getenv("FERNET_KEY")
