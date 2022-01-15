@@ -1,11 +1,8 @@
-FROM python:3.9
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
 RUN python3 -m pip install poetry
 ADD ./pyproject.toml .
 ADD ./poetry.lock .
-RUN poetry install --no-dev --no-root
-
-ADD ./app /app/app
-COPY ./manage.py /app
-WORKDIR /app
-CMD poetry run uvicorn --proxy-headers --host '0.0.0.0' --port 80 --log-level debug app.main:app
+RUN poetry export -o requirements.txt
+RUN python3 -m pip install -r requirements.txt
+COPY ./app /app/app
