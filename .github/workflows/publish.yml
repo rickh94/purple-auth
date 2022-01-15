@@ -29,7 +29,7 @@ jobs:
       - name: Login to docker
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Available platforms
+      - name: Pulish to DockerHub
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -f src/Dockerfile.prod -t rickh94/purple-auth:latest -t rickh94/purple-auth:${{steps.tag.outputs.tag}} . 
+          docker buildx build --publish --platform linux/amd64,linux/arm64 -f src/Dockerfile.prod -t rickh94/purple-auth:latest -t rickh94/purple-auth:${{steps.tag.outputs.tag}} . 
           
