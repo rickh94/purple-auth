@@ -32,7 +32,7 @@ def _check_token(token, key, app_id) -> (dict, dict):
         ValueError,
     ):
         raise TokenVerificationError
-    if claims["iss"] != f"{config.ISSUER}/{app_id}":
+    if claims["iss"] != f"{config.ISSUER}/app/{app_id}":
         raise TokenVerificationError
     return headers, claims
 
@@ -55,7 +55,11 @@ async def generate_refresh_token(email: str, client_app: ClientApp) -> str:
     if not client_app.get_refresh_key() or not client_app.refresh_token_expire_hours:
         raise TokenCreationError("Refresh is not enabled")
     uid = str(uuid.uuid4())
-    payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email, "uid": uid}
+    payload = {
+        "iss": f"{config.ISSUER}/app/{client_app.app_id}",
+        "sub": email,
+        "uid": uid,
+    }
     token = jwt.generate_jwt(
         payload,
         client_app.get_refresh_key(),

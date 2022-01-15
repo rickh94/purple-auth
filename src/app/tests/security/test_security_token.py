@@ -23,7 +23,7 @@ def fake_uid():
 @pytest.fixture
 def fake_refresh_token(fake_refresh_client_app, fake_email, pwd_context, fake_uid):
     payload = {
-        "iss": f"{config.ISSUER}/{fake_refresh_client_app.app_id}",
+        "iss": f"{config.ISSUER}/app/{fake_refresh_client_app.app_id}",
         "sub": fake_email,
         "uid": fake_uid,
     }
@@ -107,7 +107,7 @@ def test_generate(fake_email, fake_client_app):
 
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
-    assert claims["iss"] == f"{config.ISSUER}/{fake_client_app.app_id}"
+    assert claims["iss"] == f"{config.ISSUER}/app/{fake_client_app.app_id}"
 
 
 def test_verify(fake_email, fake_client_app):
@@ -116,7 +116,7 @@ def test_verify(fake_email, fake_client_app):
 
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
-    assert claims["iss"] == f"{config.ISSUER}/{fake_client_app.app_id}"
+    assert claims["iss"] == f"{config.ISSUER}/app/{fake_client_app.app_id}"
     assert claims.get("iat") is not None
     assert claims.get("exp") is not None
 
@@ -204,7 +204,6 @@ async def test_generate_refresh_token(
     fake_refresh_client_app: ClientApp,
     monkeypatch,
     pwd_context,
-    mocker,
 ):
     fake_uuid = uuid.uuid4()
     monkeypatch.setattr(uuid, "uuid4", lambda: fake_uuid)
@@ -219,7 +218,7 @@ async def test_generate_refresh_token(
 
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
-    assert claims["iss"] == f"{config.ISSUER}/{fake_refresh_client_app.app_id}"
+    assert claims["iss"] == f"{config.ISSUER}/app/{fake_refresh_client_app.app_id}"
     assert claims["uid"] == str(fake_uuid)
 
     # mock_insert.assert_called()

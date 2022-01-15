@@ -28,7 +28,7 @@ def test_exported_key_verifies_token(fake_client_app, fake_email):
 
     assert headers["alg"] == "ES256"
     assert claims["sub"] == fake_email
-    assert claims["iss"] == f"{config.ISSUER}/{fake_client_app.app_id}"
+    assert claims["iss"] == f"{config.ISSUER}/app/{fake_client_app.app_id}"
 
 
 def test_exported_key_doesnt_verify_invalid_token(
