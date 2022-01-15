@@ -23,7 +23,7 @@ services:
       - FROM_ADDRESS=test@mg.example.com
       - MAILGUN_KEY=fake-mailgun-key
       - FERNET_KEY=QwU0xmHBPLl7lY2aSVgiWE0GiJDn/ReFx/KWDjClgrA=
-      - HOST=https://auth.example.com
+      - FQDN_HOST=https://auth.example.com
       - PORTAL_ENABLED=1
       - WEBMASTER_EMAIL=admin@purpleauth.com
     volumes:
