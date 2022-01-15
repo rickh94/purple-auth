@@ -38,7 +38,7 @@ def _check_token(token, key, app_id) -> (dict, dict):
 
 
 def generate(email: str, client_app: ClientApp) -> str:
-    payload = {"iss": f"{config.ISSUER}/{client_app.app_id}", "sub": email}
+    payload = {"iss": f"{config.ISSUER}/app/{client_app.app_id}", "sub": email}
     return jwt.generate_jwt(
         payload,
         client_app.get_key(),
