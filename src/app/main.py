@@ -1,12 +1,11 @@
 import logging
 from pathlib import Path
 
-import mongox
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
 from app import config
-from app.config import PORTAL_ENABLED, HOST
+from app.config import PORTAL_ENABLED
 from app.models.client_app_model import ClientApp
 from app.models.token_models import RefreshToken
 from app.portal.routes.api import portal_api_router
@@ -17,7 +16,7 @@ from app.routes.client_app import client_app_router
 from app.routes.magic import magic_router
 from app.routes.otp import otp_router
 from app.routes.token import token_router
-from app.portal.crud import clientapp_crud, user_crud
+from app.portal.crud import user_crud
 
 app = FastAPI(title="Auth Service", version=config.VERSION)
 
