@@ -25,10 +25,8 @@ app.include_router(otp_router, prefix="/otp", tags=["otp"])
 app.include_router(token_router, prefix="/token", tags=["token"])
 app.include_router(client_app_router, prefix="/app", tags=["app"])
 
-
-logging.basicConfig(
-    format="[%(asctime)s] %(levelname)s: %(message)s", level=logging.DEBUG
-)
+loglevel = logging.DEBUG if config.DEBUG else logging.INFO
+logging.basicConfig(format="[%(asctime)s] %(levelname)s: %(message)s", level=loglevel)
 
 
 @app.on_event("startup")
