@@ -31,5 +31,5 @@ jobs:
 
       - name: Available platforms
         run: |
-          docker buildx build --platforms linux/amd64,linux/arm64 -f src/Dockerfile.prod -t rickh94/purple-auth:latest -t rickh94/purple-auth:${{steps.tag.outputs.tag}} . 
+          docker buildx build --platform linux/amd64,linux/arm64 -f src/Dockerfile.prod -t rickh94/purple-auth:latest -t rickh94/purple-auth:${{steps.tag.outputs.tag}} . 
           
