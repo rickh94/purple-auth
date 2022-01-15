@@ -14,4 +14,4 @@ if not DB_URL:
     )
 
 db_client = mongox.Client(DB_URL)
-db = db_client.get_database("purple_auth")
+db = db_client.get_database("purpleauth_db")
