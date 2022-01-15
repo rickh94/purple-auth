@@ -9,7 +9,7 @@ from app.database import db
 
 
 class User(mongox.Model):
-    email: EmailStr = mongox.Field(..., title="User Email Address", unique=True)
+    email: EmailStr = mongox.Field(..., title="User Email Address")
     name: Optional[str] = mongox.Field(None, title="User Name")
     disabled: bool = mongox.Field(False, title="Disabled")
     deletion_protection: bool = mongox.Field(

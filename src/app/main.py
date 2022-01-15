@@ -51,6 +51,6 @@ if PORTAL_ENABLED:
 
     @app.on_event("startup")
     async def prepare_portal_dbs():
-        await User.create_indexes()
         await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
+        await User.create_indexes()
         await ensure_portal_app()
