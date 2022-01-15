@@ -6,3 +6,4 @@ ADD ./src/poetry.lock .
 RUN poetry export -o requirements.txt
 RUN python3 -m pip install -r requirements.txt
 COPY ./src/app /app/app
+COPY ./src/manage.py /app/manage.py
