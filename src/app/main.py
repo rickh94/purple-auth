@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+from brotli_asgi import BrotliMiddleware
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
@@ -45,10 +46,12 @@ if PORTAL_ENABLED:
         "/static", StaticFiles(directory=str(static_path.absolute())), name="static"
     )
 
-    from app.portal.models.user_model import User
+    app.add_middleware(BrotliMiddleware)
 
-    @app.on_event("startup")
-    async def prepare_portal_dbs():
-        await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
-        await User.create_indexes()
-        await ensure_portal_app()
+    # from app.portal.models.user_model import User
+
+    # @app.on_event("startup")
+    # async def prepare_portal_dbs():
+    #     await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
+    #     await User.create_indexes()
+    #     await ensure_portal_app()

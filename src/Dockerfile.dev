@@ -5,4 +5,5 @@ ADD ./pyproject.toml .
 ADD ./poetry.lock .
 RUN poetry export -o requirements.txt
 RUN python3 -m pip install -r requirements.txt
+ADD ./prestart.sh /app
 COPY ./app /app/app

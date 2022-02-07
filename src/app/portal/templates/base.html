@@ -38,7 +38,7 @@
   ></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body hx-boost="true">
+<body hx-boost="true" class="{% block bodyclass %}{% endblock bodyclass %}">
 <div
   aria-live="assertive"
   class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-100"
