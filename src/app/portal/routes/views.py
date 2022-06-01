@@ -33,6 +33,13 @@ async def how_it_works(request: Request):
     return templates.TemplateResponse("how-it-works.html", vm.to_dict())
 
 
+@portal_router.get("/walkthrough")
+async def tech_docs(request: Request):
+    vm = TechDocsVM(request)
+    await vm.check_for_user()
+    return templates.TemplateResponse("walkthrough.html", vm.to_dict())
+
+
 @portal_router.get("/dashboard")
 async def dashboard(request: Request):
     vm = DashboardVM(request)
@@ -45,7 +52,7 @@ async def dashboard(request: Request):
 @portal_router.get("/tech-docs")
 async def tech_docs(request: Request):
     vm = TechDocsVM(request)
-    return templates.TemplateResponse("tech-docs.html", vm.to_dict())
+    return templates.TemplateResponse("walkthrough.html", vm.to_dict())
 
 
 @portal_router.get("/login/confirm")

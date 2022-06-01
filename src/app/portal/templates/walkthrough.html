@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block bodyclass %}bg-gray-800{% endblock %}
+{% block body %}
+  {#  Maybe a jump-link sidebar? responsive... #}
+  <main class="bg-white" id="main">
+    <div class="mx-auto max-w-4xl w-full pt-12 pb-20 text-left px-4 space-y-4">
+      <header class="space-y-2">
+        <h1 class="font-bold text-4xl text-violet-900">Technical Documentation</h1>
+        <p class="text-gray-900">Here I will go through all the deep technical
+          details of how the authentication works and what makes it secure.</p>
+      </header>
+      <section id="creation" class="space-y-2">
+        <h4 class="text-2xl text-violet-900">Creating an App</h4>
+        <p class="text-gray-900">
+          The first step is to create a new App in the dashboard. You will need to give
+          the app a name, decided whether to allow refresh tokens, and where to redirect
+          users who authenticate using magic links. You also set a threshold to be
+          notified if you are nearing your allotted authentications. (Billing is done
+          by pre-purchasing a certain number of authentication attempts for your account
+          which never expire)
+        </p>
+        <figure class="">
+          <img
+            src="/static/img/creation_form.png"
+            alt="App creation form"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto"
+          >
+          <figcaption class="text-center">
+            Just creating a test app.
+          </figcaption>
+        </figure>
+        <p class="text-gray-900">
+          Once you send the form, your app is saved as a document in MongoDB associated
+          with your account (which was auto-created on your first login). The backend
+          will generate a unique id and secret keys for your app and show you the
+          created app. You will need your app id to implement the authentication on your
+          site, but it's not a secret so it can be viewed at any time. You will also
+          need the public portion of the generated keys. If you
+          use <a
+          href="https://pypi.org/project/purple-auth-client/"
+          class="text-violet-900 hover:underline focus:underline"
+        >my authentication
+          client</a> for Python, this is handled automatically.
+        </p>
+        <figure class="">
+          <img
+            src="/static/img/created_app.png"
+            alt="Created app"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto"
+          >
+          <figcaption class="text-center">
+            Look there's an app now!
+          </figcaption>
+        </figure>
+      </section>
+      <section id="updating" class="space-y-2">
+        <h4 class="text-2xl text-violet-900">Updating and Deleting</h4>
+        <p class="text-gray-900">
+          In addition to viewing your created app, you can also edit the app's
+          attributes (except the app id), rotate the secret keys, and delete the app.
+          Editing the name and URLs for the app shouldn't break anything and users
+          likely won't notice.
+        </p>
+        <p class="text-gray-900">
+          Rotating the keys will immediately invalidate all active user sessions and
+          everyone will need to re-authenticate. You will also need to ensure that
+          the new keys are downloaded anywhere they are needed and removed from any
+          caches.
+        </p>
+        <p class="text-gray-900">
+          To prevent accidental deletion, which could be catastrophic for a production
+          application, I've enabled deletion protection by default. It is
+          straightforward to since the system will walk you through it, but very
+          difficult to do by accident.
+        </p>
+      </section>
+      <section class="space-y-2" id="using">
+        <h4 class="text-2xl text-violet-900">Using Purple Authentication</h4>
+        <p class="text-gray-900">
+          Now that you have an app setup, you will need to add it to your site. You can
+          either access the REST API directly, or use <a
+          href="https://pypi.org/project/purple-auth-client/"
+          class="text-violet-900 hover:underline focus:underline"
+        >my authentication client</a> for python, or access the REST API directly.
+          FastAPI (which is the basis for this system) generates documentation
+          automatically, so the best way to understand the api is to
+          <a href="/docs" class="text-violet-900 hover:underline focus:underline">
+            look at them
+          </a>.
+        </p>
+        <p class="text-gray-900">
+          Briefly, your site/app sends a request to my server with your app id from the
+          dashboard and a user email. I will generate either a secret code or magic
+          link and store that hashed secret with the email and app id in a redis cache
+          for five minutes and email it to the user.
+        </p>
+        <h6 class="text-xl">Link Authentication</h6>
+        <p class="text-gray-900">
+          If the user/you chose magic link authentication, all they have to do is click
+          the link in their email. They will first be taken to Purple Authentication
+          to have their secret code authenticated, then be redirected to the configured
+          URL depending on whether the authentication was successful or not. If it
+          was successful, an id token and refresh token (if enabled) will be included
+          in the query string of the URL. You can then save that in a cookie (or
+          whatever)
+          and use it to authenticate the user.
+        </p>
+        <h6 class="text-xl">Code Authentication</h6>
+        <p class="text-gray-900">
+          If the user/you chose one time code authentication, they will enter the code
+          they were sent on your site, which you then submit for validation. If it is
+          the correct code and hasn't expired, the backend will send back a payload with
+          the user's new tokens to be saved on the client.
+        </p>
+        <h6 class="text-xl">Validating Tokens</h6>
+        <p class="text-gray-900">
+          All tokens generated by Purple Auth are JWTs. ID Tokens can be validated using
+          the public portion of your app key accessible on the API. Tokens all use the
+          ES256 algorithm. User email is in the "sub" claim. Everything else is
+          standard. The API docs show where to get the public key. The easiest way
+          will be to use <a
+          href="https://pypi.org/project/purple-auth-client/"
+          class="text-violet-900 hover:underline focus:underline"
+        >my authentication client</a>, but you can also send tokens to the API for
+          validation. This is going to be very slow at scale compared to using the
+          client or doing it yourself.
+        </p>
+        <p class="text-gray-900">
+          Refresh tokens can only be authenticated by sending them to the refresh
+          endpoint. If the token is valid, a new ID Token will be generated and sent
+          back.
+        </p>
+      </section>
+      <section id="users-and-authorization" class="space-y-2">
+        <h4 class="text-2xl text-violet-900">User Management and Authorization</h4>
+        <p class="text-gray-900">
+          I don't do it. Purple Auth handles authentication <em class="italic">only</em>.
+          This system will verify that someone is the email address they say they are,
+          but nothing more. It doesn't handle any authorization, doesn't store
+          information about users, and doesn't limit who can log in. If you want any of
+          that, you have to do it yourself. Anyone with an email address can
+          be authenticated against any app unless there are restrictions somewhere
+          else in the chain.
+        </p>
+      </section>
+      <section id="portal-auth" class="space-y-2">
+        <h4 class="text-2xl text-violet-900">Portal Authentication</h4>
+        <p class="text-gray-900">
+          Of course, you have to authenticate yourself in order to access your apps
+          dashboard and create/edit apps. Naturally, Purple Auth uses itself for
+          authentication. Purple Auth uses purple-auth-client to access itself and
+          authenticate users. It's <a href="https://github.com/rickh94/purple-auth">
+          open source</a>, so if you want to see a reference implementation (or the
+          whole thing), you can! Check out the portal folder. You can even host it
+          yourself if you want. The only real difference from a production app is
+          that it's been hard-coded to app id 0 and cannot be deleted, and its own
+          url is used as the endpoint for the auth client (rather than
+          https://purpleauth.com). This is really just for easier development and
+          testing.
+        </p>
+      </section>
+    </div>
+  </main>
+{% endblock body %}

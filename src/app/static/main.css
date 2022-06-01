@@ -789,6 +789,10 @@ select {
   margin-top: 2rem;
 }
 
+.ml-10 {
+  margin-left: 2.5rem;
+}
+
 .block {
   display: block;
 }
@@ -855,6 +859,30 @@ select {
 
 .h-3 {
   height: 0.75rem;
+}
+
+.h-32 {
+  height: 8rem;
+}
+
+.h-64 {
+  height: 16rem;
+}
+
+.h-72 {
+  height: 18rem;
+}
+
+.h-96 {
+  height: 24rem;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.max-h-96 {
+  max-height: 24rem;
 }
 
 .min-h-screen {
@@ -943,6 +971,10 @@ select {
 
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.max-w-5xl {
+  max-width: 64rem;
 }
 
 .flex-1 {
@@ -1343,6 +1375,11 @@ select {
   padding-bottom: 0.5rem;
 }
 
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
@@ -1643,6 +1680,11 @@ select {
 .text-violet-50 {
   --tw-text-opacity: 1;
   color: rgb(245 243 255 / var(--tw-text-opacity));
+}
+
+.text-violet-900 {
+  --tw-text-opacity: 1;
+  color: rgb(76 29 149 / var(--tw-text-opacity));
 }
 
 .text-red-500 {
@@ -1988,6 +2030,11 @@ html {
   border-color: rgb(139 92 246 / var(--tw-border-opacity));
 }
 
+.focus\:underline:focus {
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
+}
+
 .focus\:decoration-white:focus {
   -webkit-text-decoration-color: #fff;
           text-decoration-color: #fff;
@@ -2306,6 +2353,14 @@ html {
 
   .md\:grid {
     display: grid;
+  }
+
+  .md\:h-96 {
+    height: 24rem;
+  }
+
+  .md\:w-auto {
+    width: auto;
   }
 
   .md\:max-w-3xl {
