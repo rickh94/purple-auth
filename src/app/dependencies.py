@@ -1,13 +1,11 @@
 import datetime
-from urllib.parse import quote_plus
 
 import mongox
 from fastapi import HTTPException, Depends
-from motor import motor_asyncio
 
 from app import config
-from app.models.client_app_model import ClientApp
 from app.io import email as io_email
+from app.models.client_app_model import ClientApp
 
 
 async def check_client_app(app_id: str):
