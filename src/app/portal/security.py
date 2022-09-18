@@ -1,20 +1,21 @@
 import logging
 from typing import Optional
 
+import purple_auth_client
 import purple_auth_client as pac
 from fastapi import HTTPException, Security, Depends
 from fastapi.openapi.models import OAuthFlows
 from fastapi.security import OAuth2
 from starlette.requests import Request
 
-from app.config import HOST
+from app.config import HOST, PORTAL_API_KEY
 from app.portal.crud import user_crud
 from app.portal.models.user_model import User
 
 # USE_WHITELIST = bool(os.getenv("USE_WHITELIST"))
 # WHITELIST_DOMAINS = os.getenv("WHITELIST_DOMAINS", "").lower().split(",")
 # WHITELIST = os.getenv("WHITELIST", "").lower().split(",")
-auth_client = pac.AuthClient(HOST, "0")
+auth_client = pac.AuthClient(HOST, "0", PORTAL_API_KEY)
 
 
 class ServiceAuthentication(OAuth2):
@@ -67,7 +68,10 @@ oauth2_scheme = ServiceAuthentication(
 
 async def try_refresh(request: Request) -> Optional[str]:
     if refresh_token := oauth2_scheme.get_refresh_token(request):
-        new_token = await auth_client.refresh(refresh_token)
+        try:
+            new_token = await auth_client.refresh(refresh_token)
+        except purple_auth_client.AuthenticationFailure:
+            return None
         logging.debug(f"Refreshed token: {new_token}")
         return new_token
     logging.debug("No refresh token")

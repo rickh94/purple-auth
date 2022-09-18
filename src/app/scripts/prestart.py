@@ -12,7 +12,6 @@ async def setup_portal():
     await ensure_portal_app()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if config.PORTAL_ENABLED:
         asyncio.run(setup_portal())
-

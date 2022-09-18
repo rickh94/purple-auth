@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 # noinspection PyAbstractClass
 from app.config import FERNET
 from app.database import db
+from app.security.context import PWD_CONTEXT
 
 
 # Consider moving quota information into a sub-document
@@ -57,6 +58,9 @@ class ClientApp(mongox.Model):
         default_factory=datetime.datetime.now,
         title="Date and time of creation.",
     )
+    hashed_api_key: str = mongox.Field(
+        None, title="Hashed API Key to authorize using the app. Keep this secret."
+    )
 
     class Meta:
         collection = db.get_collection("client_apps")
@@ -79,6 +83,12 @@ class ClientApp(mongox.Model):
     def set_refresh_key(self, key: jwk.JWK):
         pem = key.export_to_pem(private_key=True, password=None)
         self.enc_refresh_key = FERNET.encrypt(pem)
+
+    def set_api_key(self, api_key: str):
+        self.hashed_api_key = PWD_CONTEXT.hash(api_key)
+
+    def verify_api_key(self, api_key: str) -> bool:
+        return PWD_CONTEXT.verify(api_key, self.hashed_api_key)
 
     @property
     def refresh_enabled(self) -> bool:

@@ -17,6 +17,7 @@ async def create_client_app(
     owner: str,
     redirect_url: str,
     failure_redirect_url: str,
+    api_key: str,
     refresh: bool = False,
     app_id: Optional[str] = None,
     refresh_token_expire_hours: int = 24,
@@ -40,6 +41,7 @@ async def create_client_app(
         app.refresh_token_expire_hours = refresh_token_expire_hours
 
     app.set_key(key)
+    app.set_api_key(api_key)
     await app.insert()
 
     return app
@@ -160,5 +162,18 @@ async def enable_deletion_protection(app_id: str, user: User) -> ClientApp:
     """
     app = await get_client_app(app_id, user)
     app.deletion_protection = True
+    await app.save()
+    return app
+
+
+async def update_api_key(app: ClientApp, new_api_key) -> ClientApp:
+    """
+    Replace the old api key with a new one.
+
+    :param app: The app to update
+    :param new_api_key: the new api key to hash and insert
+    :return: the updated app
+    """
+    app.set_api_key(new_api_key)
     await app.save()
     return app

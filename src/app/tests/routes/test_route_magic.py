@@ -8,6 +8,9 @@ from app import config
 from app.io import email as io_email
 
 
+# TODO: test that routes are not accessible without api key
+
+
 @pytest.fixture
 def mock_token_generate(mocker):
     return mocker.patch(
@@ -46,7 +49,9 @@ def test_request_magic(mocker, test_client, fake_client_app, fake_email):
     )
 
     response = test_client.post(
-        f"/magic/request/{fake_client_app.app_id}", json={"email": fake_email}
+        f"/magic/request/{fake_client_app.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -74,13 +79,62 @@ def test_request_magic_uses_quota(
     prev_quota = fca.quota
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
     assert fca.quota == prev_quota - 1
 
     fca.save.assert_called()
+
+
+def test_request_magic_requires_api_key_doesnt_use_quota(
+    mocker, test_client, fake_client_app_use_quota, fake_email
+):
+    fca = fake_client_app_use_quota
+    fake_link = "http://auth.example.com/test123?secret=12345"
+    _mock_send_email = mocker.patch("app.routes.magic.io_email.send")
+    _mock_magic_generate = mocker.patch(
+        "app.routes.magic.security_magic.generate",
+        return_value=fake_link,
+    )
+    prev_quota = fca.quota
+
+    response = test_client.post(
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 401
+    assert fca.quota == prev_quota
+
+    fca.save.assert_not_called()
+
+
+def test_request_magic_requires_correct_api_key_doesnt_use_quota(
+    mocker, test_client, fake_client_app_use_quota, fake_email
+):
+    fca = fake_client_app_use_quota
+    fake_link = "http://auth.example.com/test123?secret=12345"
+    _mock_send_email = mocker.patch("app.routes.magic.io_email.send")
+    _mock_magic_generate = mocker.patch(
+        "app.routes.magic.security_magic.generate",
+        return_value=fake_link,
+        headers={"Authorization": "Bearer wrongkey"},
+    )
+    prev_quota = fca.quota
+
+    response = test_client.post(
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 401
+    assert fca.quota == prev_quota
+
+    fca.save.assert_not_called()
 
 
 def test_request_magic_fails_out_of_quota(
@@ -95,7 +149,9 @@ def test_request_magic_fails_out_of_quota(
     )
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 503
@@ -124,7 +180,9 @@ def test_request_magic_notifies_low_quota(
     )
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -155,7 +213,9 @@ def test_request_magic_notifies_low_quota_once_per_day(
     )
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -174,7 +234,9 @@ def test_request_magic_notifies_low_quota_next_day(
     )
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -205,7 +267,9 @@ def test_request_magic_notifies_low_quota_custom_threshold(
     )
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -238,7 +302,9 @@ def test_request_magic_succeeds_unlimited_quota_doesnt_notify(
     assert fca.quota == 0
 
     response = test_client.post(
-        f"/magic/request/{fca.app_id}", json={"email": fake_email}
+        f"/magic/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -270,7 +336,9 @@ def test_request_magic_email_failed(
     )
 
     response = test_client.post(
-        f"/magic/request/{fake_client_app.app_id}", json={"email": fake_email}
+        f"/magic/request/{fake_client_app.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 500

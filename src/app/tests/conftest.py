@@ -60,6 +60,7 @@ def create_fake_client_app(faker, mocker):
         if low_quota_last_notified:
             _app.low_quota_last_notified = low_quota_last_notified
         _app.set_key(key)
+        _app.set_api_key("testkey")
         if refresh:
             _app.set_refresh_key(jwk.JWK.generate(kty="EC", size=4096))
             _app.refresh_token_expire_hours = refresh_expire or 24

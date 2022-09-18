@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-import ujson
 
 from app.security.token import TokenVerificationError
 

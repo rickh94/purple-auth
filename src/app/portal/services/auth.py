@@ -18,7 +18,7 @@ def make_authenticated_response(
 ) -> Response:
     response = RedirectResponse(
         url,
-        status_code=status.HTTP_303_SEE_OTHER,
+        status_code=HTTP_303_SEE_OTHER,
         headers={"HX-Redirect": url, "HX-Push": url},
     )
     response.set_cookie(

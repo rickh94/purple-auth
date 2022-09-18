@@ -5,6 +5,8 @@ import pytest
 
 from app.io import email as io_email
 
+# TODO: test certain routes are not accessible without api key
+
 
 @pytest.fixture
 def mock_token_generate(mocker):
@@ -41,7 +43,9 @@ def test_request_otp(monkeypatch, mocker, test_client, fake_client_app, fake_ema
     )
 
     response = test_client.post(
-        f"/otp/request/{fake_client_app.app_id}", json={"email": fake_email}
+        f"/otp/request/{fake_client_app.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -79,6 +83,7 @@ def test_request_otp_email_failed(
     response = test_client.post(
         f"/otp/request/{fake_client_app.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 500
@@ -92,6 +97,7 @@ def test_request_otp_fails_out_of_quota(
     response = test_client.post(
         f"/otp/request/{fake_client_app_out_of_quota.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 503
@@ -126,12 +132,56 @@ def test_request_otp_uses_quota(
     response = test_client.post(
         f"/otp/request/{fake_client_app_use_quota.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
     assert fake_client_app_use_quota.quota == prev_quota - 1
 
     fake_client_app_use_quota.save.assert_called()
+
+
+def test_request_otp_requires_api_key_doesnt_use_quota(
+    mocker, test_client, fake_email, fake_client_app_use_quota
+):
+    _mock_send_email = mocker.patch("app.routes.otp.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+    mocker.patch("mongox.Model.save")
+    prev_quota = fake_client_app_use_quota.quota
+
+    response = test_client.post(
+        f"/otp/request/{fake_client_app_use_quota.app_id}",
+        json={"email": fake_email},
+    )
+
+    assert response.status_code == 401
+    assert fake_client_app_use_quota.quota == prev_quota
+
+    fake_client_app_use_quota.save.assert_not_called()
+
+
+def test_request_otp_requires_correct_api_key_doesnt_use_quota(
+    mocker, test_client, fake_email, fake_client_app_use_quota
+):
+    _mock_send_email = mocker.patch("app.routes.otp.io_email.send")
+    _mock_otp_generate = mocker.patch(
+        "app.routes.otp.security_otp.generate", return_value="11111111"
+    )
+    mocker.patch("mongox.Model.save")
+    prev_quota = fake_client_app_use_quota.quota
+
+    response = test_client.post(
+        f"/otp/request/{fake_client_app_use_quota.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer wrongkey"},
+    )
+
+    assert response.status_code == 401
+    assert fake_client_app_use_quota.quota == prev_quota
+
+    fake_client_app_use_quota.save.assert_not_called()
 
 
 def test_request_otp_notifies_low_quota(
@@ -145,6 +195,7 @@ def test_request_otp_notifies_low_quota(
     response = test_client.post(
         f"/otp/request/{fake_client_app_low_quota.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -175,6 +226,7 @@ def test_request_otp_notifies_low_quota_only_once_per_day(
     response = test_client.post(
         f"/otp/request/{fca.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -194,6 +246,7 @@ def test_request_otp_notifies_low_quota_next_day(
     response = test_client.post(
         f"/otp/request/{fca.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -224,6 +277,7 @@ def test_request_otp_notifies_low_quota_custom_threshold(
     response = test_client.post(
         f"/otp/request/{fca.app_id}",
         json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200
@@ -254,7 +308,9 @@ def test_request_otp_succeeds_unlimited_quota_doesnt_notify(
     assert fca.quota == 0
 
     response = test_client.post(
-        f"/otp/request/{fca.app_id}", json={"email": fake_email}
+        f"/otp/request/{fca.app_id}",
+        json={"email": fake_email},
+        headers={"Authorization": "Bearer testkey"},
     )
 
     assert response.status_code == 200

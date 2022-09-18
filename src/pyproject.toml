@@ -21,9 +21,9 @@ cryptography = "^36.0.1"
 argon2-cffi = "^21.3.0"
 aiofiles = "^0.8.0"
 Jinja2 = "^3.0.3"
-purple-auth-client = "^1.0.0"
 mongox = "^0.0.3"
 brotli-asgi = "^1.1.0"
+purple-auth-client = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

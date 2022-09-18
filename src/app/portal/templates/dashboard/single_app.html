@@ -16,7 +16,11 @@
   >
     <div class="flex-1 px-4 py-2 text-sm truncate">
       {{ app.name }}
+      {% if app.unlimited %}
+      <p class="text-gray-500">Unlimited Authentications</p>
+      {% else %}
       <p class="text-gray-500">{{ app.quota }} Authentications Remaining</p>
+      {% endif %}
     </div>
     <div class="flex-shrink-0 pr-2">
       <button

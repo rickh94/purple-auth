@@ -1,3 +1,5 @@
+import secrets
+
 import ujson
 from fastapi import APIRouter, Form, Depends, Response, Header, HTTPException
 from starlette.requests import Request
@@ -53,6 +55,7 @@ async def create_app(
     :param user: The user creating the app. This route requires authentication.
     :return: HTML for the app in the list and events to display the full app.
     """
+    api_key = secrets.token_urlsafe()
     new_app = await clientapp_crud.create_client_app(
         app_name=app_name,
         owner=user.email,
@@ -60,6 +63,7 @@ async def create_app(
         refresh=refresh,
         refresh_token_expire_hours=refresh_token_expire_hours,
         failure_redirect_url=failure_redirect_url,
+        api_key=api_key,
     )
     vm = SingleAppVM(request, new_app)
     res = templates.TemplateResponse(
@@ -77,7 +81,12 @@ async def create_app(
     res.headers["HX-Trigger"] = htmx.make_event_header(
         res.headers, {"appCreated": "{}"}
     )
-    res.headers["HX-Trigger-After-Settle"] = ujson.dumps({"showApp": new_app.app_id})
+    res.headers["HX-Trigger-After-Settle"] = ujson.dumps(
+        {
+            "showApp": new_app.app_id,
+            "showApiKey": api_key,
+        }
+    )
     return res
 
 
@@ -204,6 +213,53 @@ async def rotate_app_keys(app_id: str, user: User = Depends(get_current_active_u
         "may have been cached",
         "success",
     )
+    return res
+
+
+# TODO: add confirmation dialog for changing the api key
+
+
+@portal_api_router.get("/apps/{app_id}/reset-api-key")
+async def reset_api_key_form(
+    request: Request, app_id: str, user: User = Depends(get_current_active_user)
+):
+    """
+    Reset app api key.
+
+    :param app_id:
+    :param user:
+    :return:
+    """
+    app = await clientapp_crud.get_client_app(app_id, user)
+    return templates.TemplateResponse(
+        "dashboard/confirm_reset_api_key.html", {"request": request, "app": app}
+    )
+
+
+@portal_api_router.post("/apps/{app_id}/reset-api-key")
+async def reset_api_key(
+    app_id: str, user: User = Depends(get_current_active_user), name: str = Form(...)
+):
+    """
+    Get the form to confirm resetting the app api keys
+    :param app_id: the id of the app
+    :param user: current user
+    :param name: The user-typed name of the app for confirmation
+    :return:
+    """
+    app = await clientapp_crud.get_client_app(app_id, user)
+    if app.name != name:
+        raise HTTPException(status_code=400, detail="Incorrect App name.")
+        # return templates.TemplateResponse(
+        #     "dashboard/confirm_reset_api_key.html",
+        #     {"error": "Incorrect App name.", "app": app, "request": request},
+        # )
+    new_api_key = secrets.token_urlsafe()
+    await clientapp_crud.update_api_key(app, new_api_key)
+    res = Response(
+        content="", status_code=200, headers={"HX-Trigger": '{"closeModal": "{}"}'}
+    )
+    res.headers["HX-Trigger-After-Settle"] = ujson.dumps({"showApiKey": new_api_key})
     return res
 
 

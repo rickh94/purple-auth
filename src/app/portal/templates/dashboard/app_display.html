@@ -5,7 +5,7 @@
   hx-swap="outerHTML"
   x-data="{mode: 'viewing'}"
 >
-  <div
+  <header
     class="px-4 py-5 sm:px-6"
     x-data
     x-effect="mode === 'editing' ? document.getElementById('app_name').focus() : document.getElementById('edit_button').focus()"
@@ -21,7 +21,7 @@
         class="text-violet-500 hover:text-violet-700 hover:underline active:underline"
       >send me an email</a>.
     </p>
-  </div>
+  </header>
   <div class="border-t border-gray-300 py-2 sm:p-0">
     <dl class="sm:divide-y sm:divide-gray-300">
       <div
@@ -191,7 +191,7 @@
           Deletion Protection
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            {% include "dashboard/deletion_protection_display.html" %}
+          {% include "dashboard/deletion_protection_display.html" %}
         </dd>
       </div>
     </dl>
@@ -212,14 +212,26 @@
     </button>
     <button
       type="button"
-      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm"
+      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-pink-500 text-base font-medium text-white hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:ml-3 sm:w-auto sm:text-sm"
+      hx-get="/api/apps/{{ app.app_id }}/reset-api-key"
+      hx-target="#modal-content"
+      hx-swap="innerHTML"
+      hx-trigger="click"
+    >
+    <span class="submit-button">
+       Reset API Key
+    </span>
+      <span class="loading-button">{% include "mixins/_loader.html" %}</span>
+    </button>
+    <button
+      type="button"
+      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-500 text-base font-medium text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm"
       tabindex="0"
       hx-get="/api/apps/{{ app.app_id }}/rotate-keys"
       hx-target="#modal-content"
       hx-swap="innerHTML"
       hx-trigger="click"
     >
-
     <span class="submit-button">
       Change Keys
     </span>

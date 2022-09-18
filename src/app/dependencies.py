@@ -1,7 +1,8 @@
 import datetime
+from typing import Union
 
 import mongox
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Header
 
 from app import config
 from app.io import email as io_email
@@ -15,7 +16,23 @@ async def check_client_app(app_id: str):
         raise HTTPException(status_code=404, detail="Could not find app.")
 
 
-async def client_app_use_quota(client_app: ClientApp = Depends(check_client_app)):
+async def check_client_app_authorized(
+    client_app: ClientApp = Depends(check_client_app),
+    authorization: Union[str, None] = Header(default=None),
+):
+    if not authorization:
+        raise HTTPException(status_code=401)
+    bearer, api_key = authorization.split()
+    if bearer != "Bearer" or not api_key:
+        raise HTTPException(status_code=401)
+    if not client_app.verify_api_key(api_key):
+        raise HTTPException(status_code=401)
+    return client_app
+
+
+async def client_app_use_quota(
+    client_app: ClientApp = Depends(check_client_app_authorized),
+):
     if client_app.unlimited:
         return client_app
     if client_app.quota < 1:
