@@ -21,7 +21,7 @@
                 <div x-bind:class="profileMode === 'editing' ? 'hidden' : ''">
                   {{ user.name or "" }}
                 </div>
-                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'">
+                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'" x-cloak>
                   <label for="name" class="sr-only">Your Name</label>
                   <input
                     type="text" name="name" id="name"
@@ -39,7 +39,7 @@
                 <div x-bind:class="profileMode === 'editing' ? 'hidden' : ''">
                   {{ user.email }}
                 </div>
-                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'">
+                <div x-bind:class="profileMode === 'editing' ? '' : 'hidden'" x-cloak>
                   Please
                   <a
                     href="mailto:{{ config.webmaster_email }}"
@@ -79,6 +79,7 @@
         <div
           class="space-y-3 sm:space-y-0 bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse text-white"
           x-show="profileMode === 'editing'"
+          x-cloak
         >
           <button
             type="submit"
