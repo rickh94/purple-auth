@@ -1890,6 +1890,10 @@ html {
           animation-delay: 500ms;
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 .focus-within\:border-violet-600:focus-within {
   --tw-border-opacity: 1;
   border-color: rgb(124 58 237 / var(--tw-border-opacity));

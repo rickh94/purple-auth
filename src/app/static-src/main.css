@@ -53,3 +53,7 @@ html {
 .a-delay-500 {
     animation-delay: 500ms;
 }
+
+[x-cloak] {
+  display: none !important;
+}

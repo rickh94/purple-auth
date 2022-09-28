@@ -15,8 +15,9 @@
     role="dialog"
     aria-modal="true"
     id="apikey-modal"
+    x-cloak
   >
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0" x-cloak>
       <div
         @click="$store.apiKey.open = false"
         x-data
@@ -50,6 +51,7 @@
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         id="apikey-modal-content"
         @keydown.escape="$store.apiKey.open = false"
+        x-cloak
       >
         <header class="px-4 py-5 sm:px-6">
           <h3 class="text-xl leading-6 font-medium text-gray-900" id="api-modal-title">
@@ -98,6 +100,7 @@
       role="dialog"
       aria-modal="true"
       id="dashboard-modal"
+      x-cloak
     >
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div
@@ -112,6 +115,7 @@
           x-transition:leave="ease-in duration-200"
           x-transition:leave-start="opacity-100"
           x-transition:leave-end="opacity-0"
+          x-cloak
         >
         </div>
 
@@ -146,15 +150,15 @@
 {% block script %}
   <script>
       document.addEventListener('alpine:init', function (_event) {
+          Alpine.store('apiKey', {
+              open: false,
+              apiKey: '',
+          })
           Alpine.store('modal', {
               open: false
           });
           Alpine.store('search', '');
           Alpine.store('responseError', '');
-          Alpine.store('apiKey', {
-              open: false,
-              apiKey: '',
-          })
       });
 
       document.addEventListener('openModal', function (_event) {
@@ -187,7 +191,7 @@
           }
           if (event.detail.xhr.status === 404) {
               Alpine.store('modal', {open: false});
-              Alpine.store('notification').showNotification("Not Found", "Thre requested resouce could not be found", "error");
+              Alpine.store('notification').showNotification("Not Found", "The requested resource could not be found", "error");
           }
           if (event.detail.xhr.status === 500) {
               Alpine.store('notification').showNotification("Server Error", "Something went wrong! Please try again later.", "error")
