@@ -171,3 +171,32 @@ async def test_login_refreshes_with_refresh_token(
     # should have the cookie set from the refresh in the login view.
     print(response.request._cookies["id_token"])
     assert response.request._cookies.get("id_token").value == new_id_token
+
+
+def test_robots_txt(test_client):
+    response = test_client.get("/robots.txt")
+
+    assert response.status_code == 200
+    assert "Sitemap" in response.text
+    assert "/sitemap.xml" in response.text
+    assert "User-agent: *" in response.text
+    assert "Disallow:" in response.text
+
+
+def test_sitemap_xml(test_client):
+    response = test_client.get("/sitemap.xml")
+
+    assert response.status_code == 200
+    assert '<?xml version="1.0" encoding="UTF-8"?>' in response.text
+    assert "<urlset" in response.text
+    assert "</urlset>" in response.text
+
+    for route in [
+        "/",
+        "/walkthrough",
+        "/how-it-works",
+        "/login",
+        "/docs",
+        "/tech-docs",
+    ]:
+        assert route in response.text
