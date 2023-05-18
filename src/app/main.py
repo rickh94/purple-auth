@@ -12,14 +12,14 @@ from app.models.token_models import RefreshToken
 from app.portal.routes.api import portal_api_router
 from app.portal.routes.auth import portal_auth_router
 from app.portal.routes.views import portal_router
-from app.portal.services.ensure_portal_app import ensure_portal_app
 from app.routes.client_app import client_app_router
 from app.routes.magic import magic_router
 from app.routes.otp import otp_router
 from app.routes.token import token_router
 from app.portal.crud import user_crud
+from app.portal.services.ensure_portal_app import ensure_portal_app
 
-app = FastAPI(title="Auth Service", version=config.VERSION)
+app = FastAPI(title="Purple Auth Service", version=config.VERSION)
 
 app.include_router(magic_router, prefix="/magic", tags=["magic"])
 app.include_router(otp_router, prefix="/otp", tags=["otp"])
@@ -48,10 +48,10 @@ if PORTAL_ENABLED:
 
     app.add_middleware(BrotliMiddleware)
 
-    # from app.portal.models.user_model import User
+    from app.portal.models.user_model import User
 
-    # @app.on_event("startup")
-    # async def prepare_portal_dbs():
-    #     await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
-    #     await User.create_indexes()
-    #     await ensure_portal_app()
+    @app.on_event("startup")
+    async def prepare_portal_dbs():
+        await user_crud.check_or_create_user_from_email(config.WEBMASTER_EMAIL)
+        await User.create_indexes()
+        await ensure_portal_app()

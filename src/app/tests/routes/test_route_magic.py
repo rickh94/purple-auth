@@ -59,8 +59,8 @@ def test_request_magic(mocker, test_client, fake_client_app, fake_email):
     mock_send_email.assert_called_once_with(
         to=fake_email,
         subject="Your Magic Sign In Link",
-        text=f"Click or copy this link to sign in: {fake_link}. It will expire "
-        f"in {config.MAGIC_LIFETIME} minutes.",
+        text=f"Click or copy this link to sign in:\n{fake_link}\nIt will expire "
+        f"in {config.MAGIC_LIFETIME} minutes.\n",
         from_name=fake_client_app.name,
     )
     mock_magic_generate.assert_called_once_with(fake_email, fake_client_app.app_id)
@@ -321,27 +321,6 @@ def test_request_magic_no_app(app_not_found, mocker, test_client, fake_email):
     assert response.status_code == 404
     mock_send_email.assert_not_called()
     mock_otp_generate.assert_not_called()
-
-
-def test_request_magic_email_failed(
-    monkeypatch, test_client, fake_email, fake_client_app
-):
-    async def _fail_to_email(*_args, **_kwargs):
-        raise io_email.EmailError
-
-    monkeypatch.setattr("app.routes.magic.io_email.send", _fail_to_email)
-    monkeypatch.setattr(
-        "app.routes.magic.security_magic.generate",
-        lambda *args: "http://auth.example.com/test",
-    )
-
-    response = test_client.post(
-        f"/magic/request/{fake_client_app.app_id}",
-        json={"email": fake_email},
-        headers={"Authorization": "Bearer testkey"},
-    )
-
-    assert response.status_code == 500
 
 
 def test_confirm_magic(

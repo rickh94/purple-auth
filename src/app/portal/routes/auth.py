@@ -1,3 +1,4 @@
+import logging
 import purple_auth_client as pac
 from fastapi import APIRouter, Form, HTTPException, Query, Response
 from fastapi.params import Depends
@@ -37,12 +38,14 @@ async def request_login(
     magic link authentication flow
     :return: redirect to the appropriate page to continue the login process
     """
+    logger = logging.getLogger("uvicorn.error")
     try:
         await user_crud.check_or_create_user_from_email(email)
         await auth_client.authenticate(email, flow)
     except pac.InvalidAuthFlow:
         raise HTTPException(status_code=400, detail="Invalid Auth Flow")
-    except pac.AuthClientError:
+    except pac.AuthClientError as err:
+        logger.error(f"Error creating login credentials: {type(err)}")
         raise HTTPException(status_code=500, detail="Internal Error, try again later")
     if flow == "otp":
         vm = ConfirmCodeVM(request, email)

@@ -5,7 +5,7 @@ import purple_auth_client as pac
 from fastapi import HTTPException
 from starlette import status
 from starlette.responses import Response, RedirectResponse
-from starlette.status import HTTP_303_SEE_OTHER, HTTP_307_TEMPORARY_REDIRECT
+from starlette.status import HTTP_303_SEE_OTHER
 
 from app.portal.security import auth_client, oauth2_scheme
 
@@ -67,9 +67,7 @@ def make_logged_out_response(url: str = "/?loggedOut=true") -> Response:
     return response
 
 
-def make_redirect_response(
-    to: str, status_code: int = HTTP_307_TEMPORARY_REDIRECT
-) -> Response:
+def make_redirect_response(to: str, status_code: int = HTTP_303_SEE_OTHER) -> Response:
     return RedirectResponse(
         to, headers={"HX-Redirect": to, "HX-Push": to}, status_code=status_code
     )

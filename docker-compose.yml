@@ -29,6 +29,8 @@ services:
       - REDIS_HOST=redis_cache
       - REDIS_PORT=6379
       - DEBUG=1
+    ports:
+      - "3000:6666"
     volumes:
       - ./src/app:/app/app
       - ./src/manage.py:/app/manage.py
@@ -36,15 +38,6 @@ services:
       - mongo
       - redis_cache
 
-
-  nginx:
-    image: nginx:alpine
-    volumes:
-      - ./data/nginx:/etc/nginx/conf.d
-    ports:
-      - "8089:80"
-    depends_on:
-      - app
 
   redis_cache:
     image: redis:5.0.5-alpine

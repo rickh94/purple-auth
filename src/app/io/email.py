@@ -1,4 +1,5 @@
 import aiohttp
+import logging
 
 from app import config
 
@@ -23,4 +24,4 @@ async def send(to: str, subject: str, text: str, from_name: str, reply_to: str =
             data=send_data,
         )
         if res.status != 200:
-            raise EmailError(f"Something went wrong: {await res.text()}")
+            logging.getLogger().error(f"Could not send email: {await res.text()}")

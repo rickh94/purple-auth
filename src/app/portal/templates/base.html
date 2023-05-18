@@ -6,232 +6,155 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="title" content="Purple Auth: Plug-and-play passwordless authentication">
-  <meta
-    name="description"
-    content="Purple Auth is a plug-and-play passwordless authentication solution for your website or app."
-  >
+  <meta name="description"
+    content="Purple Auth is a plug-and-play passwordless authentication solution for your website or app.">
   <title>Purple Auth</title>
   <link rel="stylesheet" href="/static/main.css">
   <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
-  <link
-    rel="apple-touch-icon"
-    sizes="180x180"
-    href="/static/icons/apple-touch-icon.png"
-  >
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="32x32"
-    href="/static/icons/favicon-32x32.png"
-  >
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="16x16"
-    href="/static/icons/favicon-16x16.png"
-  >
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
   <link rel="manifest" href="/static/site.webmanifest">
-  <script
-    src="https://unpkg.com/htmx.org@1.6.1"
+  <script src="https://unpkg.com/htmx.org@1.6.1"
     integrity="sha384-tvG/2mnCFmGQzYC1Oh3qxQ7CkQ9kMzYjWZSNtrRZygHPDDqottzEJsqS4oUVodhW"
-    crossorigin="anonymous"
-  ></script>
+    crossorigin="anonymous"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
+
 <body hx-boost="true" class="{% block bodyclass %}{% endblock bodyclass %}">
-<div
-  aria-live="assertive"
-  class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-100"
-  x-show="$store.notification.show"
-  x-data
-  x-transition:enter="transform ease-out duration-300 transition"
-  x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-  x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-  x-transition:leave="transition ease-in duration-200"
-  x-transition:leave-start="opacity-100"
-  x-transition:leave-end="opacity-0"
-  x-cloak
->
-  <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
-    <div
-      class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden"
-    >
-      <div class="p-4">
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <!-- Heroicon name: outline/information-circle -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-blue-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              x-data
-              x-show="$store.notification.level === 'info'"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <!-- Heroicon name: outline/check-circle -->
-            <svg
-              class="h-6 w-6 text-green-400"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-              x-data
-              x-show="$store.notification.level === 'success'"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <!-- Heroicon name: outline/x-circle -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-red-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              x-data
-              x-show="$store.notification.level === 'error'"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div class="ml-3 w-0 flex-1 pt-0.5">
-            <p
-              class="text-sm font-medium text-gray-900"
-              x-data
-              x-text="$store.notification.title"
-            >
-            </p>
-            <p
-              class="mt-1 text-sm text-gray-500"
-              x-data
-              x-text="$store.notification.message"
-            >
-            </p>
-          </div>
-          <div class="ml-4 flex-shrink-0 flex">
-            <button
-              class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              x-data @click="$store.notification.closeNotification()"
-            >
-              <span class="sr-only">Close</span>
-              <!-- Heroicon name: solid/x -->
-              <svg
-                class="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
+  <div aria-live="assertive"
+    class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-100"
+    x-show="$store.notification.show" x-data x-transition:enter="transform ease-out duration-300 transition"
+    x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+    x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+    x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0" x-cloak>
+    <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
+      <div
+        class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <!-- Heroicon name: outline/information-circle -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" x-data x-show="$store.notification.level === 'info'">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-            </button>
+              <!-- Heroicon name: outline/check-circle -->
+              <svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" aria-hidden="true" x-data x-show="$store.notification.level === 'success'">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <!-- Heroicon name: outline/x-circle -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" x-data x-show="$store.notification.level === 'error'">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="ml-3 w-0 flex-1 pt-0.5">
+              <p class="text-sm font-medium text-gray-900" x-data x-text="$store.notification.title">
+              </p>
+              <p class="mt-1 text-sm text-gray-500" x-data x-text="$store.notification.message">
+              </p>
+            </div>
+            <div class="ml-4 flex-shrink-0 flex">
+              <button
+                class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                x-data @click="$store.notification.closeNotification()">
+                <span class="sr-only">Close</span>
+                <!-- Heroicon name: solid/x -->
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<a
-  tabindex="0"
-  href="#main"
-  role="button"
-  class="absolute top-0 left-0 ml-2 mt-2 -translate-y-14 transition duration-200 ease-out focus:translate-y-0 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-violet-700 bg-violet-100 hover:bg-violet-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
->
-  Skip to Content
-</a>
-{% block navbar %}
+  <a tabindex="0" href="#main" role="button"
+    class="absolute top-0 left-0 ml-2 mt-2 -translate-y-14 transition duration-200 ease-out focus:translate-y-0 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-violet-700 bg-violet-100 hover:bg-violet-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
+    Skip to Content
+  </a>
+  {% block navbar %}
   {% include "mixins/_navbar.html" %}
-{% endblock navbar %}
+  {% endblock navbar %}
 
-{% block body %}{% endblock body %}
+  {% block body %}{% endblock body %}
 
-{% block footer %}
+  {% block footer %}
   {% include "mixins/_footer.html" %}
-{% endblock footer %}
-{% block script %}
-{% endblock script %}
-<script>
+  {% endblock footer %}
+  {% block script %}
+  {% endblock script %}
+  <script>
     document.addEventListener('alpine:init', function () {
-        Alpine.store('notification', {
-            show: false,
-            message: '',
-            level: 'info',
-            title: '',
+      Alpine.store('notification', {
+        show: false,
+        message: '',
+        level: 'info',
+        title: '',
 
-            showNotification(title, message, level) {
-                this.message = message;
-                this.show = true;
-                this.title = title;
-                this.level = level ? level : 'info';
-                setTimeout(() => {
-                    this.closeNotification();
-                }, 5000);
-            },
-            closeNotification() {
-                this.show = false;
-            }
-        });
+        showNotification(title, message, level) {
+          this.message = message;
+          this.show = true;
+          this.title = title;
+          this.level = level ? level : 'info';
+          setTimeout(() => {
+            this.closeNotification();
+          }, 5000);
+        },
+        closeNotification() {
+          this.show = false;
+        }
+      });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("sessionRefreshed")) {
-            setTimeout(() => {
-                Alpine.store('notification').showNotification(
-                    "Logged back in",
-                    "Your ID Token had expired, but you have been automatically logged back in " +
-                    "with your refresh token.",
-                    "success"
-                );
-            }, 500);
-        }
-        if (urlParams.get("accountDeleted")) {
-            setTimeout(() => {
-                Alpine.store('notification').showNotification(
-                    "Account Deleted",
-                    "Your account has been successfully deleted. All your apps have" +
-                    "been deleted, as well as all associated refresh tokens.",
-                    "success"
-                );
-            }, 500);
-        }
-        if (urlParams.get("loggedOut")) {
-            setTimeout(() => {
-                Alpine.store('notification').showNotification(
-                    "Logged out",
-                    "You have been successfully logged out. Have a nice day!",
-                    "success"
-                );
-            }, 500);
-        }
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("sessionRefreshed")) {
+        setTimeout(() => {
+          Alpine.store('notification').showNotification(
+            "Logged back in",
+            "Your ID Token had expired, but you have been automatically logged back in " +
+            "with your refresh token.",
+            "success"
+          );
+        }, 500);
+      }
+      if (urlParams.get("accountDeleted")) {
+        setTimeout(() => {
+          Alpine.store('notification').showNotification(
+            "Account Deleted",
+            "Your account has been successfully deleted. All your apps have" +
+            "been deleted, as well as all associated refresh tokens.",
+            "success"
+          );
+        }, 500);
+      }
+      if (urlParams.get("loggedOut")) {
+        setTimeout(() => {
+          Alpine.store('notification').showNotification(
+            "Logged out",
+            "You have been successfully logged out. Have a nice day!",
+            "success"
+          );
+        }, 500);
+      }
     });
 
     document.addEventListener('showNotification', function (e) {
-        Alpine.store('notification').showNotification(e.detail.title, e.detail.message, e.detail.level);
+      Alpine.store('notification').showNotification(e.detail.title, e.detail.message, e.detail.level);
     });
 
 
-</script>
+  </script>
 </body>
+
 </html>

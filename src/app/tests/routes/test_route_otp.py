@@ -52,7 +52,7 @@ def test_request_otp(monkeypatch, mocker, test_client, fake_client_app, fake_ema
     mock_send_email.assert_called_once_with(
         to=fake_email,
         subject="Your One Time Login Code",
-        text=f"Your code is 11111111. It will expire in 5 minutes.",
+        text=f"Your code is 11111111\nIt will expire in 5 minutes.\n",
         from_name=fake_client_app.name,
     )
     mock_otp_generate.assert_called_once_with(fake_email, fake_client_app.app_id)
@@ -67,26 +67,6 @@ def test_request_otp_no_app(app_not_found, mocker, test_client, fake_email):
     assert response.status_code == 404
     mock_send_email.assert_not_called()
     mock_otp_generate.assert_not_called()
-
-
-def test_request_otp_email_failed(
-    monkeypatch, test_client, fake_email, fake_client_app
-):
-    async def _fail_to_email(*_args, **_kwargs):
-        raise io_email.EmailError
-
-    monkeypatch.setattr("app.routes.otp.io_email.send", _fail_to_email)
-    monkeypatch.setattr(
-        "app.routes.otp.security_otp.generate", lambda *args: "11111111"
-    )
-
-    response = test_client.post(
-        f"/otp/request/{fake_client_app.app_id}",
-        json={"email": fake_email},
-        headers={"Authorization": "Bearer testkey"},
-    )
-
-    assert response.status_code == 500
 
 
 def test_request_otp_fails_out_of_quota(

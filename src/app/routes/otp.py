@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Depends
 
 from app import config
 from app.dependencies import check_client_app, client_app_use_quota
@@ -14,20 +14,21 @@ otp_router = APIRouter()
 @otp_router.post("/request/{app_id}")
 async def request_otp(
     auth_request: AuthRequest,
+    background_tasks: BackgroundTasks,
     client_app: ClientApp = Depends(client_app_use_quota),
 ):
     """Request an authentication code for an email"""
     user_code = security_otp.generate(auth_request.email, client_app.app_id)
-    try:
-        await io_email.send(
-            to=auth_request.email,
-            subject="Your One Time Login Code",
-            text=f"Your code is {user_code}. It will expire "
-            f"in {config.OTP_LIFETIME} minutes.",
-            from_name=client_app.name,
-        )
-    except io_email.EmailError:
-        raise HTTPException(status_code=500, detail="Could not send email")
+    background_tasks.add_task(
+        io_email.send,
+        to=auth_request.email,
+        subject="Your One Time Login Code",
+        text=(
+            f"Your code is {user_code}\n"
+            f"It will expire in {config.OTP_LIFETIME} minutes.\n"
+        ),
+        from_name=client_app.name,
+    )
     return "Check your email for a login code"
 
 

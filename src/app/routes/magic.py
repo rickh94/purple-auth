@@ -1,6 +1,6 @@
 from urllib.parse import quote_plus
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from starlette.responses import RedirectResponse
 
 from app import config
@@ -15,20 +15,23 @@ magic_router = APIRouter()
 
 @magic_router.post("/request/{app_id}")
 async def request_magic(
-    auth_request: AuthRequest, client_app: ClientApp = Depends(client_app_use_quota)
+    auth_request: AuthRequest,
+    background_tasks: BackgroundTasks,
+    client_app: ClientApp = Depends(client_app_use_quota),
 ):
     """Request a magic authentication link"""
     magic_link = security_magic.generate(auth_request.email, client_app.app_id)
-    try:
-        await io_email.send(
-            to=auth_request.email,
-            subject="Your Magic Sign In Link",
-            text=f"Click or copy this link to sign in: {magic_link}. It will expire "
-            f"in {config.MAGIC_LIFETIME} minutes.",
-            from_name=client_app.name,
-        )
-    except io_email.EmailError:
-        raise HTTPException(status_code=500, detail="Could not send email")
+    background_tasks.add_task(
+        io_email.send,
+        to=auth_request.email,
+        subject="Your Magic Sign In Link",
+        text=(
+            "Click or copy this link to sign in:\n"
+            f"{magic_link}\n"
+            f"It will expire in {config.MAGIC_LIFETIME} minutes.\n"
+        ),
+        from_name=client_app.name,
+    )
     return "Check your email for a login link."
 
 
