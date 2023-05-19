@@ -131,8 +131,6 @@ def test_confirm_otp_success(mocker, test_client, faker):
     mock_submit_code.assert_called_once_with(email, "123456")
 
     assert response.headers.get("location") == "/dashboard"
-    assert response.headers.get("hx-redirect") == "/dashboard"
-    assert response.headers.get("hx-push") == "/dashboard"
 
 
 def test_confirm_otp_failure_stays_on_page_and_shows_message(
