@@ -1,6 +1,6 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
-  content: ["../portal/templates/**/*.html"],
+  content: ["./portal/templates/**/*.html"],
   theme: {
     screens: {
       'xs': '475px',

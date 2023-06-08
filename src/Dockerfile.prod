@@ -1,3 +1,15 @@
+FROM node:alpine as nodebuilder
+
+RUN npm install -g pnpm
+RUN mkdir -p /app/app
+WORKDIR /app/app
+ADD ./src/app/package.json .
+ADD ./src/app/pnpm-lock.yaml .
+RUN pnpm install
+ADD ./src/app .
+RUN pnpm run build
+
+
 FROM python:3.10
 
 RUN python3 -m pip install poetry uvicorn
@@ -6,6 +18,7 @@ ADD ./src/poetry.lock .
 RUN poetry export --without-hashes -o requirements.txt
 RUN python3 -m pip install -r requirements.txt
 COPY ./src/app /app/app
+COPY --from=nodebuilder /app/app/static/main.css /app/app/static/main.css
 COPY ./src/manage.py /app/manage.py
 WORKDIR /app
 
