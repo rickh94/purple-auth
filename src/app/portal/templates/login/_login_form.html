@@ -1,46 +1,27 @@
 <form action="/auth/request" method="POST" class="space-y-3">
   <div>
-    <label
-      for="email"
-      class="block text-sm font-medium text-gray-700 text-left"
-    >Email</label>
+    <label for="email" class="block text-sm font-medium text-gray-700 text-left">Email</label>
     <div class="mt-1">
-      <input
-        type="email"
-        name="email"
-        id="email"
-        autocomplete="email"
-        placeholder="me@example.com"
-        required
-        class="block w-full shadow-sm focus:ring-violet-500 focus:border-violet-500 sm:text-sm border-gray-300 rounded-md"
-      >
+      <input type="email" name="email" id="email" autocomplete="email" placeholder="me@example.com" required
+        class="block w-full shadow-sm focus:ring-violet-500 focus:border-violet-500 sm:text-sm border-gray-300 rounded-md">
     </div>
   </div>
   <div>
-    <label
-      for="flow"
-      class="block text-sm font-medium text-gray-700 text-left"
-    >Login Type</label>
-    <select
-      id="flow" name="flow"
-      class="block mt-1 w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm rounded-md"
-    >
+    <label for="flow" class="block text-sm font-medium text-gray-700 text-left">Login Type</label>
+    <select id="flow" name="flow"
+      class="block mt-1 w-full pl-4 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm rounded-md">
       <option value="otp">One Time Code</option>
       <option selected value="magic">Magic Link</option>
     </select>
   </div>
   <div>
-    <button
-      type="submit"
-      class="submit-button w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
-    >
+    <button type="submit"
+      class="submit-button font-bold w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
       Login
     </button>
-    <button
-      type="submit"
-      class="loading-button w-full h-10 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
-    >
-     {% include "mixins/_loader.html" %}
+    <button type="submit"
+      class="loading-button w-full h-10 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
+      {% include "mixins/_loader.html" %}
     </button>
   </div>
 </form>

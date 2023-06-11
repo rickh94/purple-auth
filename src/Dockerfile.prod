@@ -12,10 +12,11 @@ RUN pnpm run build
 
 FROM python:3.10
 
-RUN python3 -m pip install poetry uvicorn
+RUN python3 -m pip install poetry 
+RUN python3 -m pip install uvicorn 
 ADD ./src/pyproject.toml .
 ADD ./src/poetry.lock .
-RUN poetry export --without-hashes -o requirements.txt
+RUN poetry export -o requirements.txt
 RUN python3 -m pip install -r requirements.txt
 COPY ./src/app /app/app
 COPY --from=nodebuilder /app/app/static/main.css /app/app/static/main.css
