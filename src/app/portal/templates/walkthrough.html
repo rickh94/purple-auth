@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 {% block bodyclass %}bg-gray-800{% endblock %}
 {% block body %}
-  {#  Maybe a jump-link sidebar? responsive... #}
-  <main class="bg-white" id="main">
-    <div class="mx-auto max-w-4xl w-full pt-12 pb-20 text-left px-4 space-y-4">
-      <header class="space-y-2">
-        <h1 class="font-bold text-4xl text-violet-900">Walk Through</h1>
-        <p class="text-gray-900">A basic walk through of how to use Purple
-          Authentication in your project.
-        </p>
-      </header>
-      <section id="creation" class="space-y-2">
-        <h4 class="text-2xl text-violet-900">Creating an App</h4>
+{# Maybe a jump-link sidebar? responsive... #}
+<main class="bg-gray-800" id="main">
+  <div class="mx-auto max-w-4xl w-full pt-12 pb-20 text-center">
+    <header class="max-w-lg mx-auto space-y-2 mb-12">
+      <h1 class="font-bold text-6xl text-violet-400">Walkthrough</h1>
+      <p class="text-gray-100 px-2">
+        A basic walk through of how to use Purple
+        Authentication in your project.
+      </p>
+    </header>
+    <div class="w-full sm:max-w-4xl space-y-4 sm:mx-auto px-4 text-left">
+      <section id="creation" class="bg-white overflow-hidden shadow sm:rounded-lg p-4 space-y-2">
+        <h4 class="text-3xl font-bold text-violet-900">Creating an App</h4>
         <p class="text-gray-900">
           The first step is to create a new App in the dashboard. You will need to give
           the app a name, decided whether to allow refresh tokens, and where to redirect
@@ -21,14 +23,9 @@
           which never expire)
         </p>
         <figure class="">
-          <img
-            src="/static/img/creation_form.png"
-            alt="App creation form"
-            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
-          <figcaption class="text-center">
-            Just creating a test app.
-          </figcaption>
+          <img src="/static/img/creation_form.png" alt="App creation form"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg">
+          <figcaption class="text-center">Just creating a test app.</figcaption>
         </figure>
         <p class="text-gray-900">
           Once you send the form, your app is saved as a document in MongoDB associated
@@ -37,25 +34,18 @@
           created app. You will need your app id to implement the authentication on your
           site, but it's not a secret so it can be viewed at any time. You will also
           need the public portion of the generated keys. If you
-          use <a
-          href="https://pypi.org/project/purple-auth-client/"
-          class="text-violet-900 hover:underline focus:underline"
-        >my authentication
-          client</a> for Python, this is handled automatically.
+          use <a href="https://pypi.org/project/purple-auth-client/"
+            class="text-violet-900 hover:underline focus:underline">my authentication
+            client</a> for Python, this is handled automatically.
         </p>
         <figure class="">
-          <img
-            src="/static/img/created_app.png"
-            alt="Created app"
-            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
-          <figcaption class="text-center">
-            Look there's an app now!
-          </figcaption>
+          <img src="/static/img/created_app.png" alt="Created app"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg">
+          <figcaption class="text-center">Look there's an app now!</figcaption>
         </figure>
       </section>
-      <section id="updating" class="space-y-2">
-        <h4 class="text-2xl text-violet-900">Updating and Deleting</h4>
+      <section id="updating" class="bg-white overflow-hidden shadow sm:rounded-lg p-4 space-y-2">
+        <h4 class="text-3xl font-bold text-violet-900">Updating and Deleting</h4>
         <p class="text-gray-900">
           In addition to viewing your created app, you can also edit the app's
           attributes (except the app id), rotate the secret keys, and delete the app.
@@ -63,14 +53,9 @@
           likely won't notice.
         </p>
         <figure class="">
-          <img
-            src="/static/img/edit_form.png"
-            alt="Edit the app attributes"
-            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
-          <figcaption class="text-center">
-            Editable attributes are highlighted in...well, purple of course!
-          </figcaption>
+          <img src="/static/img/edit_form.png" alt="Edit the app attributes"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg">
+          <figcaption class="text-center">Editable attributes are highlighted in...well, purple of course!</figcaption>
         </figure>
         <p class="text-gray-900">
           Rotating the keys will immediately invalidate all active user sessions and
@@ -81,14 +66,9 @@
           sign back in tomorrow anyway since refresh tokens only last 24 hours.
         </p>
         <figure class="">
-          <img
-            src="/static/img/change_keys.png"
-            alt="Edit the app attributes"
-            class="h-auto w-full md:h-72 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
-          <figcaption class="text-center">
-            I want to make sure you mean it.
-          </figcaption>
+          <img src="/static/img/change_keys.png" alt="Edit the app attributes"
+            class="h-auto w-full md:h-72 md:w-auto mx-auto rounded-lg shadow-lg">
+          <figcaption class="text-center">I want to make sure you mean it.</figcaption>
         </figure>
         <p class="text-gray-900">
           To prevent accidental deletion, which could be catastrophic for a production
@@ -97,36 +77,27 @@
           difficult to do by accident.
         </p>
         <figure class="">
-          <img
-            src="/static/img/deletion_protection.png"
-            alt="Edit the app attributes"
-            class="h-auto w-full md:h-64 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
+          <img src="/static/img/deletion_protection.png" alt="Edit the app attributes"
+            class="h-auto w-full md:h-64 md:w-auto mx-auto rounded-lg shadow-lg">
           <figcaption class="text-center">
             I <em class="italic">really</em> want to make sure you mean it.
           </figcaption>
         </figure>
       </section>
-      <section class="space-y-2" id="using">
-        <h4 class="text-2xl text-violet-900">Using Purple Authentication</h4>
+      <section class="bg-white overflow-hidden shadow sm:rounded-lg p-4 space-y-2" id="using">
+        <h4 class="text-3xl font-bold text-violet-900">Using Purple Authentication</h4>
         <p class="text-gray-900">
           Now that you have an app setup, you will need to add it to your site. You can
-          either access the REST API directly, or use <a
-          href="https://pypi.org/project/purple-auth-client/"
-          class="text-violet-900 hover:underline focus:underline"
-        >my authentication client</a> for python, or access the REST API directly.
+          either access the REST API directly, or use <a href="https://pypi.org/project/purple-auth-client/"
+            class="text-violet-900 hover:underline focus:underline">my authentication client</a> for python, or access
+          the REST API directly.
           FastAPI (which is the basis for this system) generates documentation
           automatically, so the best way to understand the api is to
-          <a href="/docs" class="text-violet-900 hover:underline focus:underline">
-            look at them
-          </a>.
+          <a href="/docs" class="text-violet-900 hover:underline focus:underline">look at them</a>.
         </p>
         <figure class="">
-          <img
-            src="/static/img/api_docs.png"
-            alt="App creation form"
-            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
+          <img src="/static/img/api_docs.png" alt="App creation form"
+            class="h-auto w-full md:h-96 md:w-auto mx-auto rounded-lg shadow-lg">
           <figcaption class="text-center">
             They're acutally quite nice to use. You can even try the API out right
             in the docs.
@@ -150,14 +121,9 @@
           and use it to authenticate the user.
         </p>
         <figure class="">
-          <img
-            src="/static/img/login_link.png"
-            alt="App creation form"
-            class="h-auto w-full md:h-24 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
-          <figcaption class="text-center">
-            It's ugly, but it's one click!
-          </figcaption>
+          <img src="/static/img/login_link.png" alt="App creation form"
+            class="h-auto w-full md:h-24 md:w-auto mx-auto rounded-lg shadow-lg">
+          <figcaption class="text-center">It's ugly, but it's one click!</figcaption>
         </figure>
         <h6 class="text-xl">Code Authentication</h6>
         <p class="text-gray-900">
@@ -167,11 +133,8 @@
           the user's new tokens to be saved on the client.
         </p>
         <figure class="">
-          <img
-            src="/static/img/enter_code.png"
-            alt="App creation form"
-            class="h-auto w-full md:h-64 md:w-auto mx-auto rounded-lg shadow-lg"
-          >
+          <img src="/static/img/enter_code.png" alt="App creation form"
+            class="h-auto w-full md:h-64 md:w-auto mx-auto rounded-lg shadow-lg">
           <figcaption class="text-center">
             I send the user to a code form and stick their email address in a hidden
             input. If you don't submit the email address and code, the server will
@@ -184,10 +147,9 @@
           the public portion of your app key accessible on the API. Tokens all use the
           ES256 algorithm. User email is in the "sub" claim. Everything else is
           standard. The API docs show where to get the public key. The easiest way
-          will be to use <a
-          href="https://pypi.org/project/purple-auth-client/"
-          class="text-violet-900 hover:underline focus:underline"
-        >my authentication client</a>, but you can also send tokens to the API for
+          will be to use <a href="https://pypi.org/project/purple-auth-client/"
+            class="text-violet-900 hover:underline focus:underline">my authentication client</a>, but you can also send
+          tokens to the API for
           validation. This is going to be very slow at scale compared to using the
           client or doing it yourself.
         </p>
@@ -197,8 +159,8 @@
           back.
         </p>
       </section>
-      <section id="users-and-authorization" class="space-y-2">
-        <h4 class="text-2xl text-violet-900">User Management and Authorization</h4>
+      <section id="users-and-authorization" class="bg-white overflow-hidden shadow sm:rounded-lg p-4 space-y-2">
+        <h4 class="text-2xl font-bold text-violet-900">User Management and Authorization</h4>
         <p class="text-gray-900">
           I don't do it. Purple Auth handles authentication <em class="italic">only</em>.
           This system will verify that someone is the email address they say they are,
@@ -209,14 +171,14 @@
           else in the chain.
         </p>
       </section>
-      <section id="portal-auth" class="space-y-2">
-        <h4 class="text-2xl text-violet-900">Portal Authentication</h4>
+      <section id="portal-auth" class="bg-white overflow-hidden shadow sm:rounded-lg p-4 space-y-2">
+        <h4 class="text-2xl font-bold text-violet-900">Portal Authentication</h4>
         <p class="text-gray-900">
           Of course, you have to authenticate yourself in order to access your apps
           dashboard and create/edit apps. Naturally, Purple Auth uses itself for
           authentication. Purple Auth uses purple-auth-client to access itself and
-          authenticate users. It's <a href="https://github.com/rickh94/purple-auth">
-          open source</a>, so if you want to see a reference implementation (or the
+          authenticate users. It's <a href="https://github.com/rickh94/purple-auth">open source</a>, so if you want to
+          see a reference implementation (or the
           whole thing), you can! Check out the portal folder. You can even host it
           yourself if you want. The only real difference from a production app is
           that it's been hard-coded to app id 0 and cannot be deleted, and its own
@@ -226,5 +188,6 @@
         </p>
       </section>
     </div>
-  </main>
+  </div>
+</main>
 {% endblock body %}
