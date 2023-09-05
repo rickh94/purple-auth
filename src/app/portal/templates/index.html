@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block bodyclass %}bg-gray-800 h-full{% endblock bodyclass %}
+{% block bodyclass %}bg-gray-800 min-h-screen flex flex-col{% endblock bodyclass %}
 {% block body %}
-  <main id="main" class="bg-gray-800 grid grid-cols-1 lg:grid-cols-2">
+  <main id="main" class="bg-gray-800 grid grid-cols-1 lg:grid-cols-2 flex-1">
     <div class="mx-auto max-w-7xl w-full pt-16 pb-20 text-center lg:text-left">
       <div class="px-4 sm:px-8 xl:pr-16">
         <h1
@@ -86,6 +86,24 @@
                 in your app. If you want to support users changing their email
                 addresses, you will also have to handle that in your database model.
               </dd>
+            </div>
+            <div>
+              <dt class="text-lg md:text-xl leading-6 font-bold text-violet-100">
+                My Question isn't here
+              </dt>
+              <dd class="mt-2 text-base text-white">
+                If you'd like to know more about how to actually use 
+                Purple Auth in your project, head to the 
+                <a href="/walkthrough" class="text-violet-50 underline decoration-2 underline-offset-2 hover:underline-offset-0"
+                >Walkthrough.</a> For more detail on how things work behind the 
+                scenes, check out the 
+                <a href="/how-it-works" class="text-violet-50 underline decoration-2 underline-offset-2 hover:underline-offset-0"
+                >How It Works page.</a>
+                If you still have questions or issues, feel free to 
+                <a href="//rickhenry.dev/contact" class="text-violet-50 underline decoration-2 underline-offset-2 hover:underline-offset-0"
+                >reach out using the contact form</a> on my main website.
+                I’d love to hear from you.
+            </dd>
             </div>
           </dl>
         </div>

@@ -1,2 +1,13 @@
 coverage
 src/app/static/main.css
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
