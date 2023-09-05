@@ -3,10 +3,10 @@ FROM node:alpine as nodebuilder
 RUN npm install -g pnpm
 RUN mkdir -p /app/app
 WORKDIR /app/app
-ADD ./src/app/package.json .
-ADD ./src/app/pnpm-lock.yaml .
+ADD ./app/package.json .
+ADD ./app/pnpm-lock.yaml .
 RUN pnpm install
-ADD ./src/app .
+ADD ./app .
 RUN pnpm run build
 
 
@@ -14,13 +14,13 @@ FROM python:3.10
 
 RUN python3 -m pip install poetry 
 RUN python3 -m pip install uvicorn 
-ADD ./src/pyproject.toml .
-ADD ./src/poetry.lock .
+ADD ./pyproject.toml .
+ADD ./poetry.lock .
 RUN poetry export -o requirements.txt
 RUN python3 -m pip install -r requirements.txt
-COPY ./src/app /app/app
+COPY ./app /app/app
 COPY --from=nodebuilder /app/app/static/main.css /app/app/static/main.css
-COPY ./src/manage.py /app/manage.py
+COPY ./manage.py /app/manage.py
 WORKDIR /app
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "6666"]
