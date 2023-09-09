@@ -19,9 +19,10 @@ services:
       - app
 
   app:
-    build:
-      context: src
-      dockerfile: Dockerfile.dev
+    image: rickh94/purple-auth:23.09.1-4
+    # build:
+    #   context: src
+    #   dockerfile: Dockerfile.dev
     env_file:
       - .env
     environment:

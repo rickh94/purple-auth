@@ -27,7 +27,8 @@ app.include_router(token_router, prefix="/token", tags=["token"])
 app.include_router(client_app_router, prefix="/app", tags=["app"])
 
 loglevel = logging.DEBUG if config.DEBUG else logging.INFO
-logging.basicConfig(format="[%(asctime)s] %(levelname)s: %(message)s", level=loglevel)
+logging.basicConfig(
+    format="[%(asctime)s] %(levelname)s: %(message)s", level=loglevel)
 
 
 @app.on_event("startup")
@@ -37,7 +38,8 @@ async def prepare_db():
 
 
 if PORTAL_ENABLED:
-    app.include_router(portal_auth_router, prefix="/auth", tags=["portal auth"])
+    app.include_router(portal_auth_router, prefix="/auth",
+                       tags=["portal auth"])
     app.include_router(portal_api_router, prefix="/api", tags=["portal api"])
 
     app.include_router(portal_router, prefix="", tags=["portal"])
